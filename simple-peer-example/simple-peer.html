@@ -1,0 +1,38 @@
+<html>
+<head>
+        <meta charset="UTF-8">
+        <title>Document</title>
+        <script type="text/javascript" src="./simplepeer.bundle.js"></script>
+<!--         <script type="text/javascript">
+                var peer1 = new SimplePeer(
+                        { initiator: true,
+                          trickle: true
+                        });
+                var peer2 = new SimplePeer();
+
+                peer1.on('signal', function(data) {
+                        // when peer1 has signaling data, give it to peer2
+                        console.log('peer1 on signal')
+                        peer2.signal(data)
+                })
+
+                peer2.on('signal', function(data) {
+                        // same as above, but in reverse
+                        console.log('peer2 on signal')
+                        peer1.signal(data)
+                })
+
+                peer1.on('ready', function() {
+                        // wait for 'ready' event before using the data channel
+                        console.log('peer1 ready');
+                        peer1.send('hey peer2, how is it going?')
+                })
+
+                peer2.on('message', function(data) {
+                        // got a data channel message
+                        console.log('got a message from peer1: ' + data)
+                })
+        </script> -->
+</head>
+<body></body>
+</html>

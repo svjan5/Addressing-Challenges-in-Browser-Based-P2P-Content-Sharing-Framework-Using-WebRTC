@@ -1,0 +1,16 @@
+{
+    "hapi": {
+        "port": 9000,
+        "options": {
+            "connections": {
+                "routes": {
+                    "cors": true
+                }
+            }
+        }
+    },
+
+    "dtrm": {
+        "n_fingers": 6
+    }
+}

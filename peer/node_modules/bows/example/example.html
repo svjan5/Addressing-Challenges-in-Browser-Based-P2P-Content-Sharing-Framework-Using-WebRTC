@@ -1,0 +1,60 @@
+<script>
+  //This must be set to see before bows is loaded to see debug output
+  //Simplest is to set it in the console once and refresh the page
+  localStorage.debug = true;
+
+  //To disable again: 
+  //delete localStorage.debug
+</script>
+
+<!-- Require bows -->
+<script src='../dist/bows.js'></script>
+
+<script>
+  //Setup for this page only
+  var header = function (s) { console.log('--------' + s) };
+
+  //Configure bows (optional)
+  bows.config({ padLength: 10 })
+
+  //Create your loggers for each module
+  var logger1 = bows('Module 1')
+  var logger2 = bows('Module 2')
+  var logger3 = bows('Module 3')
+
+  //Use your loggers
+  header("Default logging directly: logger()")
+  logger1("We started up")
+  logger2("We did something too")
+  logger3("I'm here")
+  logger3("I'm still here")
+  logger2("I'm tired")
+  logger1("We're done here")
+
+  header("Logging directly: logger.log()")
+  logger1.log("This is a log")
+  logger2.log("This is a log")
+  logger3.log("This is a log")
+
+  header("Warnings: logger.warn()")
+  logger1.warn("This is a warning")
+  logger2.warn("This is a warning")
+  logger3.warn("This is a warning")
+
+  header("Debug: logger.debug()")
+  logger1.debug("This is a debug")
+  logger2.debug("This is a debug")
+  logger3.debug("This is a debug")
+
+  header("Errors: logger.error()")
+  logger1.error("This is an error")
+  logger2.error("This is an error")
+  logger3.error("This is an error")
+</script>
+
+
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<div style='text-align: center'>
+  <h1>Psst.</h1>
+  <h2>View the source/Open the console.</h2>
+</div>

@@ -1,0 +1,1664 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"onlin",
+				"onlineList"
+			],
+			[
+				"get",
+				"getSortedPeerList"
+			],
+			[
+				"sor",
+				"sortedPeersId"
+			],
+			[
+				"predecessor",
+				"predecessorId"
+			],
+			[
+				"src",
+				"script	Tag"
+			],
+			[
+				"sc",
+				"script	Tag"
+			],
+			[
+				"dipsl",
+				"display_1"
+			],
+			[
+				"displa",
+				"display_is"
+			],
+			[
+				"SIGUS",
+				"SIGUSR2"
+			],
+			[
+				"mar",
+				"markTaken"
+			],
+			[
+				"res",
+				"reset_bit"
+			],
+			[
+				"max",
+				"maxVal"
+			],
+			[
+				"mem",
+				"MEM"
+			],
+			[
+				"ma",
+				"matrixPrint	printArray"
+			],
+			[
+				"A",
+				"ARRAY_SIZE"
+			],
+			[
+				"s",
+				"sizeof"
+			],
+			[
+				"Segmen",
+				"SegmentTree"
+			],
+			[
+				"FOR",
+				"FORstl	FORstl"
+			],
+			[
+				"S",
+				"S"
+			],
+			[
+				"si",
+				"simulate"
+			],
+			[
+				"FO",
+				"FORstl	FORstl"
+			],
+			[
+				"n",
+				"ntemp	ntemp"
+			],
+			[
+				"set",
+				"set_bit"
+			],
+			[
+				"test",
+				"test_bit"
+			],
+			[
+				"flip",
+				"flip_bit"
+			],
+			[
+				"seq",
+				"seqMin"
+			],
+			[
+				"min",
+				"minDiff"
+			],
+			[
+				"se",
+				"set_bit"
+			],
+			[
+				"main",
+				"maincount"
+			],
+			[
+				"ab",
+				"a_pos-b_pos"
+			],
+			[
+				"for",
+				"forstl	forstl"
+			],
+			[
+				"d",
+				"d"
+			],
+			[
+				"bis",
+				"bitset"
+			],
+			[
+				"g",
+				"givenrow"
+			],
+			[
+				"check",
+				"checkDigit"
+			],
+			[
+				"upd",
+				"range_update"
+			],
+			[
+				"ran",
+				"range_query"
+			],
+			[
+				"range",
+				"range_query"
+			],
+			[
+				"BIT",
+				"BITree"
+			],
+			[
+				"cas",
+				"caseNum"
+			],
+			[
+				"count",
+				"countmap"
+			],
+			[
+				"pri",
+				"printAll"
+			],
+			[
+				"name",
+				"nameMap"
+			],
+			[
+				"size",
+				"set_size"
+			],
+			[
+				"find",
+				"find_set"
+			],
+			[
+				"num",
+				"number_of_elements"
+			],
+			[
+				"awake",
+				"awakeAround"
+			],
+			[
+				"F",
+				"FORstl	FORstl"
+			],
+			[
+				"i",
+				"i"
+			],
+			[
+				"prin",
+				"printMatrix	printArray"
+			],
+			[
+				"str",
+				"str2int"
+			],
+			[
+				"pq",
+				"priorityqueue"
+			],
+			[
+				"a",
+				"AdjList"
+			],
+			[
+				"fo",
+				"forstl	forstl"
+			],
+			[
+				"DFS",
+				"DFS_BLACK"
+			],
+			[
+				"DF",
+				"DFS_WHITE"
+			],
+			[
+				"is",
+				"isAlpha"
+			],
+			[
+				"tyep",
+				"type2Count"
+			],
+			[
+				"c",
+				"c"
+			],
+			[
+				"avl",
+				"avlCount"
+			],
+			[
+				"en",
+				"enum	Enumeration"
+			],
+			[
+				"m",
+				"m"
+			],
+			[
+				"inc",
+				"include"
+			],
+			[
+				"head",
+				"headIndex"
+			],
+			[
+				"cnt",
+				"cnt1"
+			],
+			[
+				"cn",
+				"cnt1"
+			],
+			[
+				"t",
+				"t	test"
+			],
+			[
+				"year",
+				"year"
+			],
+			[
+				"back",
+				"back_right"
+			],
+			[
+				"fron",
+				"front_right"
+			],
+			[
+				"forn",
+				"front_left"
+			],
+			[
+				"st",
+				"str"
+			],
+			[
+				"k",
+				"k"
+			],
+			[
+				"p",
+				"printf"
+			],
+			[
+				"D",
+				"D"
+			],
+			[
+				"END",
+				"ENDAUTOMATE"
+			],
+			[
+				"RIN",
+				"RingOff"
+			],
+			[
+				"PRISON",
+				"Prison_alarm"
+			],
+			[
+				"Pris",
+				"Prison_house"
+			],
+			[
+				"Rig",
+				"RingOff"
+			],
+			[
+				"Rin",
+				"RingOn"
+			],
+			[
+				"cou",
+				"country"
+			],
+			[
+				"it",
+				"it"
+			],
+			[
+				"s_i",
+				"S_IREAD"
+			],
+			[
+				"b",
+				"b"
+			],
+			[
+				"El",
+				"ELECTRONIC"
+			],
+			[
+				"y",
+				"y"
+			],
+			[
+				"N",
+				"N"
+			],
+			[
+				"hU",
+				"Human_detect"
+			],
+			[
+				"cleaner1",
+				"Cleaner1"
+			],
+			[
+				"mod",
+				"modular_pow"
+			],
+			[
+				"finger",
+				"fingerTable"
+			],
+			[
+				"Chord",
+				"ChordNode"
+			],
+			[
+				"updae",
+				"updateFingerTable"
+			],
+			[
+				"fin",
+				"findPredecessor"
+			],
+			[
+				"KEY",
+				"KEY_LENGTH"
+			],
+			[
+				"fing",
+				"fingerTable"
+			],
+			[
+				"create",
+				"createStartKey"
+			],
+			[
+				"init",
+				"initializeFingerTable"
+			],
+			[
+				"P",
+				"prototype"
+			],
+			[
+				"cHO",
+				"ChordNode"
+			],
+			[
+				"H",
+				"Hall"
+			],
+			[
+				"Swi",
+				"SwitchOff"
+			],
+			[
+				"M",
+				"Main_gate"
+			],
+			[
+				"P_",
+				"P_detect"
+			],
+			[
+				"Door",
+				"DOOR"
+			],
+			[
+				"Do",
+				"DOOR"
+			],
+			[
+				"F_",
+				"F_detect"
+			],
+			[
+				"sW",
+				"SwitchOff"
+			],
+			[
+				"_",
+				"_Presence"
+			],
+			[
+				"Get",
+				"GetPresence"
+			],
+			[
+				"RI",
+				"RingOn"
+			],
+			[
+				"C",
+				"C"
+			],
+			[
+				"Sw",
+				"SwitchOff"
+			],
+			[
+				"to",
+				"total_length"
+			],
+			[
+				"end",
+				"endl"
+			],
+			[
+				"REP",
+				"REP1"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"node",
+				"nodeKey"
+			],
+			[
+				"prot",
+				"prototype"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/C++/C++.sublime-build",
+	"command_palette":
+	{
+		"height": 342.0,
+		"selected_items":
+		[
+			[
+				"close",
+				"Project: Close"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"clo",
+				"File: Close All"
+			],
+			[
+				"clsoe",
+				"Project: Close"
+			],
+			[
+				"save al",
+				"File: Save All"
+			],
+			[
+				"save ",
+				"File: Save All"
+			],
+			[
+				"tab",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"tab ",
+				"View: Toggle Tabs"
+			],
+			[
+				"task new",
+				"Tasks: New document"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"dele",
+				"ANF: Delete Current File"
+			],
+			[
+				"build",
+				"Build: Build"
+			],
+			[
+				"pack ins",
+				"Package Control: Install Package"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"rename",
+				"Emmet: Rename Tag"
+			],
+			[
+				"renam",
+				"ANF: Rename File"
+			],
+			[
+				"delete",
+				"ANF: Delete Current File"
+			],
+			[
+				"disable",
+				"Package Control: Disable Package"
+			],
+			[
+				"bracke to",
+				"BracketHighlighter: Toggle Global Enable"
+			],
+			[
+				"Snippet: nt",
+				"Snippet: ntemp"
+			],
+			[
+				"move",
+				"File: Move"
+			],
+			[
+				"Snippet: ",
+				"Snippet: main()"
+			],
+			[
+				"snippet",
+				"Snippet: #include <…>"
+			],
+			[
+				"c++",
+				"Set Syntax: C++"
+			],
+			[
+				"de",
+				"ANF: Delete Current File"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"build ",
+				"Build: Build"
+			],
+			[
+				"dete",
+				"ANF: Delete Current File"
+			],
+			[
+				"save",
+				"File: Save All"
+			],
+			[
+				"close ",
+				"Project: Close"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"side",
+				"View: Toggle Side Bar"
+			],
+			[
+				"disabl",
+				"Package Control: Disable Package"
+			],
+			[
+				"show all",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"show al",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"pack",
+				"Package Control: Disable Package"
+			],
+			[
+				"show",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"linter shoa",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"sublime liner",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"sublime",
+				"SublimeLinter: Next Error"
+			],
+			[
+				"snipp",
+				"Snippet: Lorem ipsum"
+			],
+			[
+				"jav",
+				"Set Syntax: Java"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"package",
+				"Package Control: Add Channel"
+			],
+			[
+				"java",
+				"Set Syntax: Java"
+			],
+			[
+				"snippe",
+				"Snippet: main()"
+			],
+			[
+				"sync++",
+				"Set Syntax: C++"
+			],
+			[
+				"mini",
+				"View: Toggle Minimap"
+			],
+			[
+				"javsc",
+				"Set Syntax: JavaScript"
+			]
+		],
+		"width": 398.0
+	},
+	"console":
+	{
+		"height": 346.0,
+		"history":
+		[
+			"; <<>> DiG 9.9.5-3-Ubuntu <<>> @8.8.8.8 -t A sublime.wbond.net +noall +answer",
+			"sublime.wbond.net.  82  IN  A   50.116.34.24",
+			"; <<>> DiG 9.9.5-3-Ubuntu <<>> @8.8.8.8 -t A sublime.wbond.net +noall +answer",
+			"@8.8.8.8 -t A sublime.wbond.net +noall +answer",
+			"dig @8.8.8.8 -t A sublime.wbond.net +noall +answer",
+			"SublimeLinter: WARNING:",
+			"SublimeLinter: ERROR:",
+			"SublimeLinter: ERROR",
+			"`SublimeLinter: ERROR",
+			"SublimeLinter",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib2,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/shikhar/SOP/nodetry/DTRM"
+	],
+	"file_history":
+	[
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/simple-peer/index.js",
+		"/home/shikhar/SOP/dvm.txt",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/bows/CHANGELOG.md",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/browserify/node_modules/crypto-browserify/create-hash.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/chord-explorer.sublime-project",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/lab/node_modules/handlebars/coverage/lcov-report/spec/data.js.html",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/jscs/lib/rules/disallow-mixed-spaces-and-tabs.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/hapi/node_modules/joi/node_modules/moment/locale/de-at.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/bows/test/disabled.html",
+		"/home/shikhar/SOP/nodetry/chord-explorer/bundle.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/src/lib/channel-manager.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/test.html",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/src/lib/finger-table.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer-signalling-server-master/src/config/default.json",
+		"/home/shikhar/Documents/dtrm/src/index.html",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer-signalling-server-master/node_modules/config/lib/config.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/hapi/CONTRIBUTING.md",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/jscs/lib/rules/require-camelcase-or-uppercase-identifiers.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer-signalling-server-master/node_modules/socket.io/node_modules/engine.io/node_modules/ws/src/bufferutil.cc",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/src/bufferutil.cc",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/src/bufferutil.cc",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/socket.io/node_modules/engine.io/node_modules/ws/src/bufferutil.cc",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/jscs/lib/rules/disallow-newline-before-block-statements.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/socket.io/node_modules/engine.io/lib/transports/websocket.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/jscs/node_modules/xmlbuilder/node_modules/lodash-node/underscore/collections/findWhere.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/browserify/index.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/jscs/node_modules/xmlbuilder/node_modules/lodash-node/compat/internals/isNative.js",
+		"/home/shikhar/SOP/nodetry/webrtc-explorer-signalling-server-master/src/index.js",
+		"/home/shikhar/SOP/nodetry/webrtc-explorer-signalling-server-master/config/test.json",
+		"/home/shikhar/SOP/nodetry/webrtc-explorer-signalling-server-master/config/default.json",
+		"/home/shikhar/SOP/nodetry/webrtc-explorer-signalling-server-master/config/production.json",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer-signalling-server-master/src/index.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/src/index.js",
+		"/home/shikhar/.config/sublime-text-3/Packages/SublimeAStyleFormatter/Default (Linux).sublime-keymap",
+		"/home/shikhar/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/shikhar/.config/sublime-text-3/Packages/Javascript Beautify/JavascriptBeautify.sublime-settings",
+		"/home/shikhar/.config/sublime-text-3/Packages/User/SublimeAStyleFormatter.sublime-settings",
+		"/home/shikhar/Documents/NP/Lab5/ISF462_lab5/code/messagequeus/msgget.c",
+		"/home/shikhar/Documents/NP/Lab5/ISF462_lab5/code/messagequeus/msggetwithkey.c",
+		"/home/shikhar/.config/sublime-text-3/Packages/SublimeAStyleFormatter/SublimeAStyleFormatter.sublime-settings",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer-signalling-server-master/tests/3-peers-test.js",
+		"/home/shikhar/.config/sublime-text-3/Packages/User/JavascriptBeautify.sublime-settings",
+		"/home/shikhar/SOP/nodetry/chord/node_modules/webrtc-ring-signaling-server-master/package.json",
+		"/home/shikhar/SOP/nodetry/chord/node_modules/webrtc-ring-master/src/index.js",
+		"/home/shikhar/SOP/nodetry/chord/test.html",
+		"/home/shikhar/SOP/nodetry/chord/webrtc-ring-master/src/index.js",
+		"/home/shikhar/SOP/nodetry/chord/bundle.js",
+		"/home/shikhar/Documents/dtrm/node_modules/webrtc-ring-signaling-server/.gitignore",
+		"/home/shikhar/Documents/dtrm/node_modules/webrtc-ring/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/build/Makefile",
+		"/home/shikhar/Documents/dtrm/src/index.bundle.js",
+		"/home/shikhar/Documents/dtrm/index.js",
+		"/home/shikhar/Documents/dtrm/package.json",
+		"/home/shikhar/Documents/dtrm/node_modules/webrtc-ring-signaling-server/package.json",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/index.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/test.html",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/main.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/bundle.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/lib/index.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-signaling-server-master/src/index.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-signaling-server-master/src/lib/utils.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/lib/finger.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/lib/channelManager.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/node_modules/lab/node_modules/handlebars/node_modules/uglify-js/lib/mozilla-ast.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/src/node_modules/browserify/test/multi_bundle_unique.js",
+		"/home/shikhar/SOP/nodetry/webrtc-ring-master/package.json",
+		"/home/shikhar/SOP/nodetry/simple-peer-master/test/test.html",
+		"/home/shikhar/SOP/nodetry/simple-peer-master/index.js",
+		"/home/shikhar/SOP/nodetry/simple-peer-master/test/basic.js",
+		"/home/shikhar/SOP/nodetry/peerjs/chat.html",
+		"/home/shikhar/SOP/nodetry/peerjs/chat/peer.js",
+		"/home/shikhar/SOP/nodetry/peerjs/peerjs-server-0.2.8/lib/server.js",
+		"/home/shikhar/SOP/nodetry/peerjs/main.js",
+		"/home/shikhar/SOP/peerjs/PeerJS chat demo.html",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/addressmap.c",
+		"/home/shikhar/Documents/NP/Lab2/Assignment/Assignment_2",
+		"/home/shikhar/Documents/NP/Lab3/Assignment.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/hello.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/environ.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/fpe.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/execlp.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/input.txt",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/signal.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/virtualShell.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/exec.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/inf.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/execl.c",
+		"/home/shikhar/Documents/NP/Lab2/Assignment/Synchronized_Parent_child",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/process_creation.c",
+		"/home/shikhar/Documents/NP/Lab1/Assignment/function.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/Lab2Netprog.doc",
+		"/home/shikhar/Documents/NP/NP.sublime-project",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/orphan.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/zombie.c",
+		"/home/shikhar/Documents/NP/Lab3/ISF462_lab3/programs-lab2/jump.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/output",
+		"/home/shikhar/Documents/NP/Lab2/Assignment/Synchronized_Parent_child.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/wait.c",
+		"/home/shikhar/Documents/NP/Lab2/Assignment/Assignment_2.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/wait",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/output.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/From parent child",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/process.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/process",
+		"/home/shikhar/Documents/NP/Lab1/gdb_programs/prog1.c",
+		"/home/shikhar/Documents/NP/Lab2/ISF462_lab2/programs/environ",
+		"/home/shikhar/CP/CP2/Dynamic Programming/0-1 knapsack with multiple people together max - Supersale.cpp",
+		"/home/shikhar/CP/CP2/Dynamic Programming/0-1 knapsack with solution printing - diving for gold.cpp",
+		"/home/shikhar/CP/CP2/Data Structure/map with vector as first element!! conformity.cpp",
+		"/home/shikhar/CP/CP2/Data Structure/Frosh Week- Inversion count.cpp",
+		"/home/shikhar/CP/TRY/walking bernard.cpp",
+		"/home/shikhar/workspace/TRY/Apache & My SQL",
+		"/home/shikhar/CP/CP2/Dynamic Programming/0-1 knapsack basic implementation.cpp",
+		"/home/shikhar/CP/CP2/Dynamic Programming/0-1 knapsack - dividing coins.cpp",
+		"/home/shikhar/CP/CP2/Data Structure/Using queue - Ferry Loading III.cpp",
+		"/home/shikhar/CP/Templates/Fenwick Tree range update and range query.cpp",
+		"/home/shikhar/CP/Templates/Fenwick Tree implementation.cpp",
+		"/home/shikhar/CP/Solved problems/fastest integer input.cpp",
+		"/home/shikhar/CP/Solved problems/mod operator, gcd operator, string to int and sort in descending order.cpp",
+		"/home/shikhar/CP/DAA - 1/Week 2/second.cpp",
+		"/home/shikhar/CP/Textbooks and others/Escape_Sequences.JPG",
+		"/home/shikhar/CP/CP2/Programming paradigm/Tour de france - iterative complete search.cpp",
+		"/home/shikhar/CP/CP2/Data Structure/Equations - Infix to postfix - stack, input when cases sep by blank line.cpp",
+		"/home/shikhar/CP/CP2/Data Structure/Ballot evaluation - Map data structure.cpp",
+		"/home/shikhar/CP/CP2/Programming paradigm/Throught the desert - binary search the answer.cpp",
+		"/home/shikhar/CP/Java/MultiThread - synchronization Basics/src/PrintDemo.java",
+		"/home/shikhar/CP/Solved problems/LABYRINTH - DFS in 2D map.cpp",
+		"/home/shikhar/CP/Solved problems/Frequent values - using segment trees.cpp",
+		"/home/shikhar/CP/Java/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/history.version"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 82.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"channelManager.connect",
+			"connect(",
+			"two",
+			"twoormore",
+			"two",
+			"registerPeer",
+			"offerAccepted",
+			"emit('ready')",
+			"ready",
+			"c-accept-offer",
+			"socket",
+			"emit",
+			"getPeerSortedList",
+			"peers",
+			"onlineusers",
+			"onlineUsers",
+			"onlineusers",
+			"onlineList",
+			"registered",
+			"offerAccepted",
+			"channel",
+			"regarding",
+			"connected",
+			"channel",
+			"channelManager",
+			"ChannelManager",
+			"channelManager",
+			"connect",
+			"router",
+			"sendOffer",
+			"peers",
+			"peerTable",
+			"null",
+			"registered",
+			"connect",
+			"register",
+			"sockets",
+			"stroustrup",
+			"ansi",
+			"false",
+			"alt",
+			"false",
+			"brackets",
+			"false",
+			"brackets",
+			"yash",
+			"'s-id'",
+			"s-id",
+			"node",
+			"chord",
+			"host",
+			"LaunchBar",
+			"localhost",
+			" // Unhandled 'error' event",
+			"unhandled error",
+			"events.js",
+			"events",
+			"send to succe",
+			"peer",
+			"peerT",
+			"peer-",
+			"Negotiator",
+			"negotiator",
+			"Negotiator",
+			"negotiator",
+			"Negotiator",
+			"negotiator",
+			"Negotiator",
+			"negotiator",
+			"Negotiator",
+			"negotiator",
+			"Negotiator",
+			"dataconnection",
+			"DataConnection",
+			"require",
+			"dezalgo",
+			"signal (SIGINT, SIG_IGN);",
+			"break",
+			"user",
+			"USER",
+			"(char *)",
+			"echoall",
+			"hello",
+			"echoall",
+			"execle",
+			"first",
+			",getpid()",
+			"{",
+			"int sig",
+			"signal",
+			"parent",
+			"ret",
+			"”",
+			"“",
+			"parent",
+			"child",
+			"parent",
+			"WNOHANG",
+			"wait",
+			"child",
+			"5000",
+			"string",
+			"DISPLAY",
+			"path",
+			"home",
+			"counter",
+			"taken",
+			"ferryDP",
+			"ferry",
+			"ferryDP",
+			"DP[n][left]",
+			", ",
+			"-",
+			"right",
+			"[right]",
+			"%f",
+			"cum",
+			"float",
+			"starboard",
+			"port",
+			"int",
+			"index",
+			"count",
+			"true",
+			"solve",
+			"Knapsack",
+			",",
+			"maxSeq"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"d",
+			": ",
+			"maps",
+			"calc",
+			"mergeSort",
+			"LL",
+			"prob",
+			"con",
+			"double",
+			"size",
+			"mem",
+			"LL",
+			" ",
+			"n",
+			"getmax",
+			"n",
+			"a",
+			"Human_detect",
+			"maxm",
+			"PROPERTY",
+			"findSet",
+			"isprime",
+			"LL",
+			"ChordNode.prototype."
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 30.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 202.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "DTRM.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"finer",
+				"node_modules/webrtc-explorer/src/lib/finger-table.js"
+			],
+			[
+				"channel",
+				"node_modules/webrtc-explorer/src/lib/channel-manager.js"
+			],
+			[
+				"indexb",
+				"src/index.bundle.js"
+			],
+			[
+				"main.js",
+				"webrtc-ring-master/src/main.js"
+			],
+			[
+				"bundl",
+				"webrtc-ring-master/src/bundle.js"
+			],
+			[
+				"assi",
+				"Lab3/Assignment_3.c"
+			],
+			[
+				"si",
+				"Lab3/ISF462_lab3/programs-lab2/signal.c"
+			],
+			[
+				"signal",
+				"Lab3/ISF462_lab3/programs-lab2/signal.c"
+			],
+			[
+				"execl",
+				"Lab3/ISF462_lab3/programs-lab2/execlp.c"
+			],
+			[
+				"exec",
+				"Lab3/ISF462_lab3/programs-lab2/exec.c"
+			],
+			[
+				"ex",
+				"Lab3/ISF462_lab3/programs-lab2/exec.c"
+			],
+			[
+				"orp",
+				"Lab3/ISF462_lab3/programs-lab2/orphan.c"
+			],
+			[
+				"ozo",
+				"Lab3/ISF462_lab3/programs-lab2/zombie.c"
+			],
+			[
+				"wiat",
+				"Lab2/ISF462_lab2/programs/wait.c"
+			],
+			[
+				"wat",
+				"Lab2/ISF462_lab2/programs/wait.c"
+			],
+			[
+				"add",
+				"Lab2/ISF462_lab2/programs/addressmap.c"
+			],
+			[
+				"process",
+				"Lab2/ISF462_lab2/programs/process_creation.c"
+			],
+			[
+				"envir",
+				"Lab2/ISF462_lab2/programs/environ.c"
+			],
+			[
+				"withsol",
+				"CP2/Dynamic Programming/0-1 knapsack with multiple people together max - Supersale.cpp"
+			],
+			[
+				"descending",
+				"Solved problems/mod operator, gcd operator, string to int and sort in descending order.cpp"
+			],
+			[
+				"main2",
+				"work/main2.cpp"
+			],
+			[
+				"2dmap",
+				"CP2/Data Structure/Grid Successor- 2d grid manipulation.cpp"
+			],
+			[
+				"2d",
+				"Solved problems/LABYRINTH - DFS in 2D map.cpp"
+			],
+			[
+				"main",
+				"work/main.cpp"
+			],
+			[
+				"bitma",
+				"Templates/BIT manipulation.cpp"
+			],
+			[
+				"faste",
+				"Solved problems/fastest integer input.cpp"
+			],
+			[
+				"maxs",
+				"CP2/Dynamic Programming/Max Sum - O(n^4) Basic implementation.cpp"
+			],
+			[
+				"torus",
+				"work/Max Sum on circular matrix (torus).cpp"
+			],
+			[
+				"maxconti",
+				"CP2/Dynamic Programming/Max Sum - Maximum contiguous subsequence - Jill rides again.cpp"
+			],
+			[
+				"ascii",
+				"Textbooks and others/ascii table.JPG"
+			],
+			[
+				"maxls",
+				"CP2/Dynamic Programming/Max Sum - Basic implementation.cpp"
+			],
+			[
+				"input",
+				"work/input.txt"
+			],
+			[
+				"fast",
+				"Solved problems/fastest integer input.cpp"
+			],
+			[
+				"lis",
+				"CP2/Dynamic Programming/LIS O(n^2) top down implementation.cpp"
+			],
+			[
+				"",
+				"CP2/Dynamic Programming/LIS O(n^2) top down implementation.cpp"
+			],
+			[
+				"n^2",
+				"CP2/Dynamic Programming/LIS basic O(n^2) implementation.cpp"
+			],
+			[
+				"gcd",
+				"Solved problems/string to int gcd big int.cpp"
+			],
+			[
+				"ch3_04",
+				"CP2/Codes/ch3/ch3_04_Max1DRangeSum.cpp"
+			],
+			[
+				"3_05",
+				"CP2/Codes/ch3/ch3_05_UVa108.cpp"
+			],
+			[
+				"uva231",
+				"CP2/Codes/ch8/ch8_03_UVa1231.cpp"
+			],
+			[
+				"usingsegment",
+				"Solved problems/Frequent values - using segment trees.cpp"
+			],
+			[
+				"fas",
+				"Solved problems/fastest integer input.cpp"
+			],
+			[
+				"main2.",
+				"work/main2.cpp"
+			],
+			[
+				"semgen",
+				"Templates/Segment trees - ranged minimum query.cpp"
+			],
+			[
+				"segmen",
+				"Templates/Segment trees - ranged minimum query.cpp"
+			],
+			[
+				"binarysear",
+				"CP2/Programming paradigm/Fill the container - binary search the answer.cpp"
+			],
+			[
+				"diago",
+				"CP2/Programming paradigm/8- Queen problem with diagonal checks.cpp"
+			],
+			[
+				"bit",
+				"Templates/BIT manipulation.cpp"
+			],
+			[
+				"inp",
+				"work/input.txt"
+			],
+			[
+				"queen",
+				"CP2/Programming paradigm/8- Queen problem with diagonal checks.cpp"
+			],
+			[
+				"8queen",
+				"CP2/Programming paradigm/Back to queen problem - variant of 8 queen problem.cpp"
+			],
+			[
+				"main.cpp",
+				"work/main.cpp"
+			],
+			[
+				"usignbitmni",
+				"CP2/Programming paradigm/broken pendometer - using bit manipulation and iterative complete search.cpp"
+			],
+			[
+				"8que",
+				"CP2/Programming paradigm/8 Queen Problem - back tracking"
+			],
+			[
+				"union",
+				"Templates/Union find disjoint set.cpp"
+			],
+			[
+				"bitmani",
+				"Templates/BIT manipulation.cpp"
+			],
+			[
+				"input.txt",
+				"DAA - 1/Week 6/input.txt"
+			],
+			[
+				"bi",
+				"Solved problems/bitset operations explained.cpp"
+			],
+			[
+				"usingbi",
+				"CP2/Programming paradigm/broken pendometer - using bit manipulation and iterative complete search.cpp"
+			],
+			[
+				"inpt",
+				"work/input.txt"
+			],
+			[
+				"allpo",
+				"CP2/Programming paradigm/Block voting - checking all possible subsets.cpp"
+			],
+			[
+				"next",
+				"CP2/Data Structure/ID Codes next_permutation & strcmp.cpp"
+			],
+			[
+				"nextperm",
+				"CP2/Adhoc/Anagrams - Using next_permutation.cpp"
+			],
+			[
+				"main2.c",
+				"work/main2.cpp"
+			],
+			[
+				"sul",
+				"CP2/Programming paradigm/Sultan's successor - variant of 8 queen problem.cpp"
+			],
+			[
+				"750",
+				"CP2/Codes/ch3/ch3_01_UVa750.cpp"
+			],
+			[
+				"ranged",
+				"Templates/Segment trees - ranged minimum query.cpp"
+			],
+			[
+				"vec",
+				"Templates/vector c++ stl.cpp"
+			],
+			[
+				"fenwi",
+				"Templates/Fenwick Tree implementation.cpp"
+			],
+			[
+				"main.cp",
+				"work/main.cpp"
+			],
+			[
+				"seg",
+				"Templates/Segment tree - ranged maximum query.cpp"
+			],
+			[
+				"fenwick",
+				"CP2/Codes/ch2/ch2_10_fenwicktree_ds.cpp"
+			],
+			[
+				"sem",
+				"Templates/Segment trees - ranged minimum query.cpp"
+			],
+			[
+				"se",
+				"Templates/Segment trees basic implementation.cpp"
+			],
+			[
+				"segm",
+				"Templates/Segment trees basic implementation.cpp"
+			],
+			[
+				"taking",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"takinginputform",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"ch2",
+				"CP2/Codes/ch2/ch2_07_graph_ds.cpp"
+			],
+			[
+				"graph",
+				"Templates/MST_graphs.cpp"
+			],
+			[
+				"adjacen",
+				"CP2/Data Structure/Matrix transpose - tranpose adjacency list.cpp"
+			],
+			[
+				"graphcons",
+				"CP2/Data Structure/Graph Construction Havel Hakimi- checking graph possiblity from degree of vertices.cpp"
+			],
+			[
+				"sortdesee",
+				"Solved problems/mod operator, gcd operator, string to int and sort in descending order.cpp"
+			],
+			[
+				"sort",
+				"Solved problems/mod operator, gcd operator, string to int.cpp"
+			],
+			[
+				"vecto",
+				"Templates/vector c++ stl.cpp"
+			],
+			[
+				"graphcon",
+				"CP2/Data Structure/Graph Construction Havel Hakimi- checking graph possiblity from degree of vertices.cpp"
+			],
+			[
+				"stringtoint",
+				"Solved problems/string to int gcd big int.cpp"
+			],
+			[
+				"input.",
+				"work/input.txt"
+			],
+			[
+				"vector",
+				"Templates/vector c++ stl.cpp"
+			],
+			[
+				"hard",
+				"CP2/Data Structure/Using map stl - Hardwood Species.cpp"
+			],
+			[
+				"conformity",
+				"CP2/Data Structure/map with vector as first element!! conformity.cpp"
+			],
+			[
+				"guessthe",
+				"CP2/Data Structure/Using queue, stack, priority queue together - i can guess the ds.cpp"
+			],
+			[
+				"unin",
+				"CP2/Codes/ch2/Union find disjoint set.cpp"
+			],
+			[
+				"segment",
+				"CP2/Codes/ch2/ch2_09_segmenttree_ds.cpp"
+			],
+			[
+				"stringtod",
+				"Solved problems/string to int gcd big int.cpp"
+			],
+			[
+				"takinginputfromstring",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"pri",
+				"CP2/Data Structure/using Priority queue - Add all.cpp"
+			],
+			[
+				"median",
+				"DAA - 1/Week 6/Median.txt"
+			],
+			[
+				"dijk",
+				"CP2/Codes/ch4/ch4_05_dijkstra.cpp"
+			],
+			[
+				"prio",
+				"CP2/Data Structure/using Priority queue - Add all.cpp"
+			],
+			[
+				"takinginpu",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"dijks",
+				"Solved problems/Shop - dijikstra in 2d grid.cpp"
+			],
+			[
+				"strongly",
+				"DAA - 1/Week 4/Strongly connected component (directed graphs) using dfs.cpp"
+			],
+			[
+				"dfs",
+				"Solved problems/LABYRINTH - DFS in 2D map.cpp"
+			],
+			[
+				"strngtoint",
+				"Solved problems/string to int gcd big int.cpp"
+			],
+			[
+				"mai2",
+				"work/main2"
+			],
+			[
+				"takin",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"takeinput",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"main2.cpp",
+				"work/main2.cpp"
+			],
+			[
+				"usingqueue",
+				"CP2/Data Structure/Using queue - Ferry Loading III.cpp"
+			],
+			[
+				"acmkh",
+				"Solved problems/ACM_ICPC_2014_kharagpur.cpp"
+			],
+			[
+				"mult",
+				"Solved problems/using multimap.cpp"
+			],
+			[
+				"input.xt",
+				"work/input.txt"
+			],
+			[
+				"queue",
+				"CP2/Data Structure/Rails - Using stack, queue - passing stl by reference.cpp"
+			],
+			[
+				"inputfrom",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"string",
+				"CP2/string to int gcd big int.cpp"
+			],
+			[
+				"inputfromstring",
+				"Solved problems/uva-10420(adhoc) - taking complete line input and taking input from string.cpp"
+			],
+			[
+				"proces",
+				"Solved/process system calls.c"
+			],
+			[
+				"sign",
+				"Solved/signal.h"
+			],
+			[
+				"log",
+				"bin/log.txt"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 438.0,
+		"selected_items":
+		[
+			[
+				"",
+				"~/SOP/DHT/Chord_JS_implementation/dht.sublime-project"
+			],
+			[
+				"com",
+				"~/Compiler Project/compilers.sublime-project"
+			],
+			[
+				"np",
+				"~/Documents/NP/NP.sublime-project"
+			],
+			[
+				"cp",
+				"~/CP/CP_MAIN.sublime-project"
+			],
+			[
+				"dat",
+				"~/CP/Data_Structures/Data_structures.sublime-project"
+			],
+			[
+				"da",
+				"~/CP/Data_Structures/Data_structures.sublime-project"
+			],
+			[
+				"data",
+				"~/CP/Data Structures/Data_structures.sublime-project"
+			],
+			[
+				"node",
+				"~/SOP/nodejs/nodejs.sublime-project"
+			],
+			[
+				"no",
+				"~/Documents/Node_essential_training/node_essential_training.sublime-project"
+			],
+			[
+				"se",
+				"~/SE project/se.sublime-project"
+			],
+			[
+				"hell",
+				"~/Projects/helloworld/hello.sublime-project"
+			],
+			[
+				"os",
+				"~/OS/OSworld.sublime-project"
+			]
+		],
+		"width": 333.0
+	},
+	"select_symbol":
+	{
+		"height": 342.0,
+		"selected_items":
+		[
+		],
+		"width": 342.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 266.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
