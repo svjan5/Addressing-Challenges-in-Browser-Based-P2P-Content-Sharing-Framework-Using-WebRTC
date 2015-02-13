@@ -2,7 +2,7 @@ var SimplePeer = require('simple-peer');
 
 exports = module.exports = ChannelManager;
 
-function ChannelManager(peerId, bootConn) {
+function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
 
         // Establish a connection to another peer
@@ -18,22 +18,22 @@ function ChannelManager(peerId, bootConn) {
                 });
 
                 channel.on('signal', function(signal) {
-                        log("Peer1 : Signal generated ");//+ "intentId:"+ intentId + "  srcPeerId:" + peerId.toDec() + " destPeerId:" + destPeerId );
+                        log("Peer1 : Signal generated "); //+ "intentId:"+ intentId + "  srcPeerId:" + peerId + " destPeerId:" + destPeerId );
 
                         bootConn.emit('b-forward-offer', {
                                 offer: {
                                         intentId: intentId,
-                                        srcPeerId: peerId.toDec(),
+                                        srcPeerId: peerId,
                                         destPeerId: destPeerId,
                                         signal: signal
                                 }
                         });
                 });
 
-                bootConn.on('p-forward-reply',function(replyData){
+                bootConn.on('p-forward-reply', function(replyData) {
                         // Error handling
                         if (replyData.offer.intentId !== intentId) {
-                                log('Peer1: not right intentId: ',replyData.offer.intentId, intentId);
+                                log('Peer1: not right intentId: ', replyData.offer.intentId, intentId);
                                 return;
                         }
 
@@ -44,6 +44,9 @@ function ChannelManager(peerId, bootConn) {
 
                         channel.on('ready', function() {
                                 log('Peer1 : channel ready to send');
+
+                                nodeDetails.addFingerEntry(replyData.offer.destPeerId, channel);
+                                channel = nodeDetails.getFingerEntry(replyData.offer.destPeerId);
                                 channel.on('message', function(chat) {
                                         console.log(chat);
                                         channel.send("I am fine");
@@ -51,7 +54,7 @@ function ChannelManager(peerId, bootConn) {
                         });
                 });
         };
-        
+
         bootConn.on('p-forward-offer', function(fwddData) {
                 console.log("Peer2: signal received");
                 var channel = new SimplePeer({
@@ -60,8 +63,10 @@ function ChannelManager(peerId, bootConn) {
 
                 channel.on('ready', function() {
                         log('Peer2 : ready to listen');
+                        nodeDetails.addFingerEntry(fwddData.offer.srcPeerId, channel);
+                        channel = nodeDetails.getFingerEntry(fwddData.offer.srcPeerId);
                         channel.send("How are you?");
-                        channel.on('message',function(chat){
+                        channel.on('message', function(chat) {
                                 console.log(chat);
                         });
                 });
@@ -75,5 +80,4 @@ function ChannelManager(peerId, bootConn) {
                 channel.signal(fwddData.offer.signal);
 
         });
-
 }

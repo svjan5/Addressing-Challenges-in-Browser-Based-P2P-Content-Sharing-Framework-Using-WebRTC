@@ -1,3 +1,4 @@
+var peer;
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var node = require('./peer/peer.js');
 
@@ -7,7 +8,7 @@ var config = {
 };
 
 
-var peer = new node(config);
+peer = new node(config);
 
 peer.events.on('registered', function(data) {
         console.log('registered with Id:', data.peerId);
@@ -19,7 +20,7 @@ var SimplePeer = require('simple-peer');
 
 exports = module.exports = ChannelManager;
 
-function ChannelManager(peerId, bootConn) {
+function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
 
         // Establish a connection to another peer
@@ -35,22 +36,22 @@ function ChannelManager(peerId, bootConn) {
                 });
 
                 channel.on('signal', function(signal) {
-                        log("Peer1 : Signal generated ");//+ "intentId:"+ intentId + "  srcPeerId:" + peerId.toDec() + " destPeerId:" + destPeerId );
+                        log("Peer1 : Signal generated "); //+ "intentId:"+ intentId + "  srcPeerId:" + peerId + " destPeerId:" + destPeerId );
 
                         bootConn.emit('b-forward-offer', {
                                 offer: {
                                         intentId: intentId,
-                                        srcPeerId: peerId.toDec(),
+                                        srcPeerId: peerId,
                                         destPeerId: destPeerId,
                                         signal: signal
                                 }
                         });
                 });
 
-                bootConn.on('p-forward-reply',function(replyData){
+                bootConn.on('p-forward-reply', function(replyData) {
                         // Error handling
                         if (replyData.offer.intentId !== intentId) {
-                                log('Peer1: not right intentId: ',replyData.offer.intentId, intentId);
+                                log('Peer1: not right intentId: ', replyData.offer.intentId, intentId);
                                 return;
                         }
 
@@ -61,6 +62,9 @@ function ChannelManager(peerId, bootConn) {
 
                         channel.on('ready', function() {
                                 log('Peer1 : channel ready to send');
+
+                                nodeDetails.addFingerEntry(replyData.offer.destPeerId, channel);
+                                channel = nodeDetails.getFingerEntry(replyData.offer.destPeerId);
                                 channel.on('message', function(chat) {
                                         console.log(chat);
                                         channel.send("I am fine");
@@ -68,7 +72,7 @@ function ChannelManager(peerId, bootConn) {
                         });
                 });
         };
-        
+
         bootConn.on('p-forward-offer', function(fwddData) {
                 console.log("Peer2: signal received");
                 var channel = new SimplePeer({
@@ -77,8 +81,10 @@ function ChannelManager(peerId, bootConn) {
 
                 channel.on('ready', function() {
                         log('Peer2 : ready to listen');
+                        nodeDetails.addFingerEntry(fwddData.offer.srcPeerId, channel);
+                        channel = nodeDetails.getFingerEntry(fwddData.offer.srcPeerId);
                         channel.send("How are you?");
-                        channel.on('message',function(chat){
+                        channel.on('message', function(chat) {
                                 console.log(chat);
                         });
                 });
@@ -92,30 +98,153 @@ function ChannelManager(peerId, bootConn) {
                 channel.signal(fwddData.offer.signal);
 
         });
-
 }
 },{"simple-peer":9}],3:[function(require,module,exports){
 var Id = require('dht-id');
-
 exports = module.exports = NodeDetails;
 
-function NodeDetails(peerId, n_fingers){
+function NodeDetails(peerId, n_fingers) {
         var self = this;
-        self.peerId = peerId;
-        self.sucessor = self.id;
-        self.predecessor = self.id;
-        self.fingerTable = {};
+        var MOD = Math.pow(2, n_fingers);
 
-        function initializeFingerTable (n_fingers) {
-        	for(var i=0;i<n_fingers;i++){
-        		var index = self.peerId.toDec() + Math.pow(2,i);
-        		self.fingerTable[index] = {
-        			fingerId: self.peerId, 
-        			connector: null
-        		};
-        	}
+        self.peerId = peerId;
+        self.sucessor = {
+                peerId: self.peerId,
+                connector: null
+        };
+        self.predecessor = {
+                peerId: null,
+                connector: null
+        };
+        self.fingerTable = {};
+        initializeFingerTable(n_fingers);
+        self.keys = Object.keys(self.fingerTable);
+        self.connectorIds = [];
+        self.connectorIds.push(self.peerId);
+
+        function initializeFingerTable(n_fingers) {
+                for (var i = 0; i < n_fingers; i++) {
+                        var index = (self.peerId + Math.pow(2, i)) % MOD;
+                        self.fingerTable[index] = {
+                                fingerId: peerId,
+                                connector: null
+                        };
+                }
         }
-        
+
+        self.addFingerEntry = function(otherPeerId, channel) {
+                var i, j, index, posToAdd;
+
+                self.connectorIds.push(otherPeerId);
+                self.connectorIds.sort(function(a,b){return a > b;});
+
+                // console.log("Inserting " + otherPeerId +" entry in finger table of "+self.peerId);
+
+                for (i = 0; i < n_fingers - 1; i++) {
+                        var flag = false;
+                        index = self.keys[i];
+
+                        for(j = 0; j<self.connectorIds.length ;j++){
+
+                                if(index <= self.connectorIds[j]) {
+                                        posToAdd = j;
+                                        flag = true;
+                                        break;
+                                }
+
+                        }
+                        if(!flag) posToAdd = 0;
+
+                        if(self.connectorIds[posToAdd] == otherPeerId){
+                                console.log("Adding "+self.connectorIds[posToAdd]+" to "+index);
+                                self.fingerTable[index].fingerId = otherPeerId;
+                                self.fingerTable[index].connector = channel;
+                        }
+                }
+                console.log(self.fingerTable);
+        }
+
+        self.getFingerEntry = function(otherPeerId) {
+                // var i, j, index, posToAdd;
+
+
+                // for (i = 0; i < n_fingers - 1; i++) {
+                //         var flag = false;
+                //         index = self.keys[i];
+                //         for(j = 0; j<self.connectorIds.length ;j++){
+                //                 if(index <= self.connectorIds[j]) {
+                //                         posToAdd = j;
+                //                         flag = true;
+                //                         break;
+                //                 }
+                //         }
+                //         if(!flag) posToAdd = n_fingers;
+                //         console.log(otherPeerId+" "+ index);
+                //         return self.fingerTable[index].connector;
+                // }
+                var i,j;
+                self.keys.sort(function(a,b){return a > b;});
+
+                if(self.keys[n_fingers-1] < otherPeerId )
+                        return self.fingerTable[self.keys[0]].connector;
+
+                for(var i=n_fingers-2; i>=0; i--){
+                        var flag = false;
+                        index = self.keys[i];
+
+                        if(index < otherPeerId){
+                                return self.fingerTable[self.keys[i+1]].connector;
+                        }
+                }
+                return self.fingerTable[self.keys[0]].connector;
+        }
+
+        self.findSuccessor = function(peerId) {
+                // One node in network
+                if (self.peerId == self.successor.peerId)
+                        return self.peerId;
+
+                if (isBetween(peerId, self.peerId, self.successor.peerId) || peerId == self.successor.peerId)
+                        return self.successor;
+
+                else {
+                        var node = self.closestPrecedingFinger(peerId);
+                        if (node == self)
+                                return self.successor.findSuccessor(peerId);
+                        else
+                                return node.findSuccessor(peerId);
+                }
+        }
+
+        self.findPredecessor = function(peerId){
+                var remotePeerId = self.peerId;
+                while(!isBetween(peerId, remotePeerId, getSucessor(remotePeerId))){
+                        remotePeerId = getClosestPrecedingFinger(remotePeerId, peerId);
+                }
+                return remotePeerId;
+        }
+
+        self.closestPrecedingFinger = function(peerId){
+                for (var i = n_fingers - 1; i >= 0; i--) {
+                        var fingerEntry = self.fingerTable[self.keys[i]].fingerId;
+                        if (isBetween(fingerEntry, self.peerId, peerId))
+                                return fingerEntry;
+                }
+        }
+
+        self.getClosestPrecedingFinger = function(destPeerId,peerId){
+                if(destPeerId == self.peerId)
+                        return self.closestPrecedingFinger(peerId);
+                else{
+
+                }
+        }
+
+        /* peerId <belongs to> (fromKey,toKey) exclusive*/
+        function isBetween(peerId, fromKey, toKey) {
+                if (fromKey > toKey) return (peerId > fromKey || peerId < toKey);
+                else return (peerId > fromKey && peerId < toKey);
+        }
 
 }
 },{"dht-id":7}],4:[function(require,module,exports){
@@ -8750,7 +8879,6 @@ function toArray(list, index) {
 var ee2 = require('eventemitter2').EventEmitter2;
 var io = require('socket.io-client');
 var bows = require('bows');
-var Id = require('dht-id');
 var NodeDetails = require('./node-details.js');
 var ChannelManager = require('./channel-manager.js');
 
@@ -8776,21 +8904,21 @@ function Peer(config) {
         var bootConn = io(config.signalingURL + '/');
 
         // received when peer is ready to use*/
-        bootConn.once('connect', function(){
+        bootConn.once('connect', function() {
                 log('bootstrap connection established');
         });
 
         /// module api
         self.register = function() {
-                bootConn.once('p-registered', function (regData) {
-                        self.peerId = new Id(regData.peerId);
+                bootConn.once('p-registered', function(regData) {
+                        self.peerId = regData.peerId;
                         self.events.emit('registered', {
                                 peerId: regData.peerId
                         });
                         self.nodeDetails = new NodeDetails(self.peerId, regData.n_fingers);
-                        self.channelManager = new ChannelManager(self.peerId,bootConn);
-                        
-                        if(regData.destPeerId != null){
+                        self.channelManager = new ChannelManager(self.peerId, bootConn, self.nodeDetails);
+
+                        if (regData.destPeerId != null) {
                                 self.channelManager.connect(regData.destPeerId);
                         }
                 });
@@ -8799,7 +8927,7 @@ function Peer(config) {
                 bootConn.emit('b-register', {});
         };
 }
-},{"./channel-manager.js":2,"./node-details.js":3,"bows":4,"dht-id":7,"eventemitter2":8,"socket.io-client":20}],69:[function(require,module,exports){
+},{"./channel-manager.js":2,"./node-details.js":3,"bows":4,"eventemitter2":8,"socket.io-client":20}],69:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *

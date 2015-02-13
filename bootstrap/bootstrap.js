@@ -15,7 +15,7 @@ p-registered    - tell a client he is registered and what is their Id
 var Hapi = require('hapi');
 var io = require('socket.io');
 var config = require('config');
-var Id = require('dht-id');
+// var Id = require('dht-id');
 
 var server = new Hapi.Server(config.get('hapi.options'));
 
@@ -51,54 +51,60 @@ var peers = {};
 
 // Console for server
 var repl = require('repl');
-var prompt = repl.start({prompt: 'server>'});
+var prompt = repl.start({
+        prompt: 'server>'
+});
 prompt.context.peers = peers;
 
 function mainServerFunction(socket) {
 
 
         socket.on('b-register', registerPeer);
-        socket.on('b-forward-offer',forwardOffer);
-        socket.on('b-forward-reply',forwardReply);
+        socket.on('b-forward-offer', forwardOffer);
+        socket.on('b-forward-reply', forwardReply);
         socket.on('disconnect', peerRemove);
 
 
-        function registerPeer () {
-                var peerId = new Id(Math.floor(Math.random() * Math.pow(2,config.get('dtrm.n_fingers')) ) );
+        function registerPeer() {
+                // Handling duplicate peerId
+                do {
+                        var peerId = Math.floor(Math.random() * Math.pow(2, config.get('dtrm.n_fingers')));
+                } while (peers[peerId] !== undefined);
+
                 var destPeerId = null;
-                
-                if(Object.keys(peers).length > 0){
+
+                if (Object.keys(peers).length > 0) {
                         var keys = Object.keys(peers);
-                        destPeerId = parseInt(keys[Math.floor(Math.random()*keys.length)]);
+                        destPeerId = parseInt(keys[Math.floor(Math.random() * keys.length)]);
                 }
 
-                peers[peerId.toDec()] = socket;
+                peers[peerId] = socket;
 
                 socket.emit('p-registered', {
-                        peerId: peerId.toDec(),
+                        peerId: peerId,
                         n_fingers: config.get('dtrm.n_fingers'),
                         destPeerId: destPeerId
                 });
 
-                console.log('registered new peer: ', peerId.toDec());
+                console.log('registered new peer: ', peerId);
         }
 
-        function forwardOffer (dataToFwd) {
-                console.log(dataToFwd.offer.srcPeerId +" ---forwarding offer---> " + dataToFwd.offer.destPeerId);
+        function forwardOffer(dataToFwd) {
+                console.log(dataToFwd.offer.srcPeerId + " ---forwarding offer---> " + dataToFwd.offer.destPeerId);
                 peers[dataToFwd.offer.destPeerId]
-                                .emit('p-forward-offer', dataToFwd);
+                        .emit('p-forward-offer', dataToFwd);
         }
 
-        function forwardReply (dataToFwd) {
-                console.log(dataToFwd.offer.destPeerId +" ---forwarding reply---> " +  dataToFwd.offer.srcPeerId );
+        function forwardReply(dataToFwd) {
+                console.log(dataToFwd.offer.destPeerId + " ---forwarding reply---> " + dataToFwd.offer.srcPeerId);
                 peers[dataToFwd.offer.srcPeerId]
-                                .emit('p-forward-reply', dataToFwd);
-        }   
+                        .emit('p-forward-reply', dataToFwd);
+        }
 
         function peerRemove() {
                 Object.keys(peers).map(function(peerId) {
-                        if(peers[peerId].id === socket.id)
+                        if (peers[peerId].id === socket.id)
                                 delete peers[peerId];
                 });
-        }     
+        }
 }

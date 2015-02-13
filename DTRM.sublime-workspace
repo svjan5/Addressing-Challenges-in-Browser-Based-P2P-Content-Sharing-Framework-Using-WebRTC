@@ -4,6 +4,98 @@
 		"selected_items":
 		[
 			[
+				"in",
+				"index"
+			],
+			[
+				"l",
+				"log"
+			],
+			[
+				"po",
+				"posToAdd"
+			],
+			[
+				"o",
+				"otherPeerId"
+			],
+			[
+				"co",
+				"console"
+			],
+			[
+				"fin",
+				"fingerTable"
+			],
+			[
+				"k",
+				"k"
+			],
+			[
+				"finger",
+				"fingerId"
+			],
+			[
+				"finge",
+				"fingerTable"
+			],
+			[
+				"n",
+				"n_fingers"
+			],
+			[
+				"c",
+				"connectorIds"
+			],
+			[
+				"re",
+				"remotePeerId"
+			],
+			[
+				"fu",
+				"function"
+			],
+			[
+				"f",
+				"function"
+			],
+			[
+				"d",
+				"destPeerId"
+			],
+			[
+				"r",
+				"replyData"
+			],
+			[
+				"fi",
+				"fingerId"
+			],
+			[
+				"con",
+				"console"
+			],
+			[
+				"data",
+				"dataToFwd"
+			],
+			[
+				"for",
+				"for	for (…) {…} (Improved Native For-Loop)"
+			],
+			[
+				"off",
+				"offeredDataToForward"
+			],
+			[
+				"forwa",
+				"forwardOffer"
+			],
+			[
+				"reg",
+				"registerPeer"
+			],
+			[
 				"onlin",
 				"onlineList"
 			],
@@ -88,10 +180,6 @@
 				"FORstl	FORstl"
 			],
 			[
-				"n",
-				"ntemp	ntemp"
-			],
-			[
 				"set",
 				"set_bit"
 			],
@@ -122,14 +210,6 @@
 			[
 				"ab",
 				"a_pos-b_pos"
-			],
-			[
-				"for",
-				"forstl	forstl"
-			],
-			[
-				"d",
-				"d"
 			],
 			[
 				"bis",
@@ -236,10 +316,6 @@
 				"type2Count"
 			],
 			[
-				"c",
-				"c"
-			],
-			[
 				"avl",
 				"avlCount"
 			],
@@ -290,10 +366,6 @@
 			[
 				"st",
 				"str"
-			],
-			[
-				"k",
-				"k"
 			],
 			[
 				"p",
@@ -368,20 +440,12 @@
 				"modular_pow"
 			],
 			[
-				"finger",
-				"fingerTable"
-			],
-			[
 				"Chord",
 				"ChordNode"
 			],
 			[
 				"updae",
 				"updateFingerTable"
-			],
-			[
-				"fin",
-				"findPredecessor"
 			],
 			[
 				"KEY",
@@ -450,43 +514,83 @@
 			[
 				"RI",
 				"RingOn"
-			],
-			[
-				"C",
-				"C"
-			],
-			[
-				"Sw",
-				"SwitchOff"
-			],
-			[
-				"to",
-				"total_length"
-			],
-			[
-				"end",
-				"endl"
-			],
-			[
-				"REP",
-				"REP1"
-			],
-			[
-				"proto",
-				"prototype"
-			],
-			[
-				"node",
-				"nodeKey"
-			],
-			[
-				"prot",
-				"prototype"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "bootstrap/bootstrap.js",
+			"settings":
+			{
+				"buffer_size": 3405,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "peer/peer.js",
+			"settings":
+			{
+				"buffer_size": 1769,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "peer/channel-manager.js",
+			"settings":
+			{
+				"buffer_size": 3383,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "peer/node-details.js",
+			"settings":
+			{
+				"buffer_size": 5644,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bundle.js",
+			"settings":
+			{
+				"buffer_size": 347266,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": " self.addFingerEntry = function(otherPeerId, channel) {\n                var flag = false,\n                        i;\n\n                for (i = 0; i < n_fingers - 1; i++) {\n                        if (otherPeerId == self.keys[i] || otherPeerId < self.keys[i + 1]) {\n                                self.fingerTable[self.keys[i]].fingerId = otherPeerId;\n                                self.fingerTable[self.keys[i]].connector = channel;\n                                flag = true;\n                                // break;\n                        }\n                }\n                if (!flag) {\n                        self.fingerTable[self.keys[i]].fingerId = otherPeerId;\n                        self.fingerTable[self.keys[i]].connector = channel;\n                }\n        }",
+			"settings":
+			{
+				"buffer_size": 778,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.js",
+			"settings":
+			{
+				"buffer_size": 282,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 175,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "bootstrap/config/default.json",
+			"settings":
+			{
+				"buffer_size": 244,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/C++/C++.sublime-build",
 	"command_palette":
@@ -494,6 +598,18 @@
 		"height": 342.0,
 		"selected_items":
 		[
+			[
+				"rename",
+				"ANF: Rename File"
+			],
+			[
+				"renam",
+				"ANF: Rename File"
+			],
+			[
+				"rena",
+				"ANF: Rename File"
+			],
 			[
 				"close",
 				"Project: Close"
@@ -557,14 +673,6 @@
 			[
 				"inst",
 				"Package Control: Install Package"
-			],
-			[
-				"rename",
-				"Emmet: Rename Tag"
-			],
-			[
-				"renam",
-				"ANF: Rename File"
 			],
 			[
 				"delete",
@@ -699,7 +807,7 @@
 				"Set Syntax: JavaScript"
 			]
 		],
-		"width": 398.0
+		"width": 414.0
 	},
 	"console":
 	{
@@ -731,10 +839,31 @@
 	},
 	"expanded_folders":
 	[
-		"/home/shikhar/SOP/nodetry/DTRM"
+		"/home/shikhar/SOP/nodetry/DTRM",
+		"/home/shikhar/SOP/nodetry/DTRM/bootstrap",
+		"/home/shikhar/SOP/nodetry/DTRM/bootstrap/config",
+		"/home/shikhar/SOP/nodetry/DTRM/peer",
+		"/home/shikhar/SOP/nodetry/DTRM/simple-peer-example"
 	],
 	"file_history":
 	[
+		"/home/shikhar/SOP/nodetry/DTRM/bundle.js",
+		"/home/shikhar/SOP/nodetry/DTRM/bootstrap/node_modules/hapi/test/file/image.png.gz",
+		"/home/shikhar/SOP/nodetry/DTRM/bootstrap/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/examples/fileapi/public/index.html",
+		"/home/shikhar/SOP/nodetry/DTRM/bootstrap/node_modules/hapi/node_modules/inert/lib/file.js",
+		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer-signalling-server-master/package.json",
+		"/home/shikhar/SOP/nodetry/DTRM/simple-peer-example/simple-peer.html",
+		"/home/shikhar/SOP/nodetry/DTRM/simple-peer-example/test-peer.js",
+		"/home/shikhar/SOP/nodetry/DTRM/simple-peer-example/simplepeer.bundle.js",
+		"/home/shikhar/SOP/nodetry/DTRM/simple-peer-example/simple-peer.htl",
+		"/home/shikhar/SOP/nodetry/DTRM/peer/network-detail.js",
+		"/home/shikhar/SOP/nodetry/DTRM/peer/finger-table.js",
+		"/home/shikhar/SOP/nodetry/DTRM/server/bootstrap.js",
+		"/home/shikhar/SOP/nodetry/DTRM/bootstrap/server.js",
+		"/home/shikhar/SOP/nodetry/DTRM/server/config/default.json",
+		"/home/shikhar/SOP/nodetry/DTRM/server/server.js",
+		"/home/shikhar/SOP/nodetry/DTRM/config/default.json",
+		"/home/shikhar/SOP/nodetry/DTRM/server.js",
 		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/webrtc-explorer/node_modules/simple-peer/index.js",
 		"/home/shikhar/SOP/dvm.txt",
 		"/home/shikhar/SOP/nodetry/chord-explorer/node_modules/bows/CHANGELOG.md",
@@ -845,28 +974,11 @@
 		"/home/shikhar/CP/CP2/Data Structure/map with vector as first element!! conformity.cpp",
 		"/home/shikhar/CP/CP2/Data Structure/Frosh Week- Inversion count.cpp",
 		"/home/shikhar/CP/TRY/walking bernard.cpp",
-		"/home/shikhar/workspace/TRY/Apache & My SQL",
-		"/home/shikhar/CP/CP2/Dynamic Programming/0-1 knapsack basic implementation.cpp",
-		"/home/shikhar/CP/CP2/Dynamic Programming/0-1 knapsack - dividing coins.cpp",
-		"/home/shikhar/CP/CP2/Data Structure/Using queue - Ferry Loading III.cpp",
-		"/home/shikhar/CP/Templates/Fenwick Tree range update and range query.cpp",
-		"/home/shikhar/CP/Templates/Fenwick Tree implementation.cpp",
-		"/home/shikhar/CP/Solved problems/fastest integer input.cpp",
-		"/home/shikhar/CP/Solved problems/mod operator, gcd operator, string to int and sort in descending order.cpp",
-		"/home/shikhar/CP/DAA - 1/Week 2/second.cpp",
-		"/home/shikhar/CP/Textbooks and others/Escape_Sequences.JPG",
-		"/home/shikhar/CP/CP2/Programming paradigm/Tour de france - iterative complete search.cpp",
-		"/home/shikhar/CP/CP2/Data Structure/Equations - Infix to postfix - stack, input when cases sep by blank line.cpp",
-		"/home/shikhar/CP/CP2/Data Structure/Ballot evaluation - Map data structure.cpp",
-		"/home/shikhar/CP/CP2/Programming paradigm/Throught the desert - binary search the answer.cpp",
-		"/home/shikhar/CP/Java/MultiThread - synchronization Basics/src/PrintDemo.java",
-		"/home/shikhar/CP/Solved problems/LABYRINTH - DFS in 2D map.cpp",
-		"/home/shikhar/CP/Solved problems/Frequent values - using segment trees.cpp",
-		"/home/shikhar/CP/Java/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/history.version"
+		"/home/shikhar/workspace/TRY/Apache & My SQL"
 	],
 	"find":
 	{
-		"height": 24.0
+		"height": 32.0
 	},
 	"find_in_files":
 	{
@@ -878,9 +990,61 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"index",
+			"[self.keys[i]",
+			"posToAdd",
+			"i",
+			"src",
+			"remotePeerId",
+			"srcPeerId",
+			"closestPrecedingFinger",
+			"peerId",
+			"keys",
+			"key",
+			"()",
+			"closestPrecedingNode",
+			"function ",
+			"world",
+			"fingerTable",
+			"null",
+			".toDec()",
+			"toDec",
+			".toDec()",
+			"to",
+			"nodeKey",
+			"key",
+			"this",
+			"destPeerId",
+			"peerId",
+			"signal",
+			"peers.length",
+			"data",
+			"n-fingers",
+			"fingers",
+			"data",
+			"forwardOffer",
+			"data",
+			"channel",
+			"ioc",
+			"offeredDataToForward",
+			"dstId",
+			"s-send-offer",
+			"false",
+			"SimplePeer",
+			"Peer",
+			"int",
+			"server",
+			"c-",
+			"s-",
+			"dtrm",
+			"Explorer",
+			"explorer",
+			"Explorer",
+			"c-",
+			"s-",
 			"channelManager.connect",
 			"connect(",
 			"two",
@@ -956,59 +1120,7 @@
 			"dataconnection",
 			"DataConnection",
 			"require",
-			"dezalgo",
-			"signal (SIGINT, SIG_IGN);",
-			"break",
-			"user",
-			"USER",
-			"(char *)",
-			"echoall",
-			"hello",
-			"echoall",
-			"execle",
-			"first",
-			",getpid()",
-			"{",
-			"int sig",
-			"signal",
-			"parent",
-			"ret",
-			"”",
-			"“",
-			"parent",
-			"child",
-			"parent",
-			"WNOHANG",
-			"wait",
-			"child",
-			"5000",
-			"string",
-			"DISPLAY",
-			"path",
-			"home",
-			"counter",
-			"taken",
-			"ferryDP",
-			"ferry",
-			"ferryDP",
-			"DP[n][left]",
-			", ",
-			"-",
-			"right",
-			"[right]",
-			"%f",
-			"cum",
-			"float",
-			"starboard",
-			"port",
-			"int",
-			"index",
-			"count",
-			"true",
-			"solve",
-			"Knapsack",
-			",",
-			"maxSeq"
+			"dezalgo"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1016,6 +1128,11 @@
 		"regex": false,
 		"replace_history":
 		[
+			"bootstrap",
+			"p-",
+			"b-",
+			"p-",
+			"b-",
 			"d",
 			": ",
 			"maps",
@@ -1050,8 +1167,277 @@
 	"groups":
 	[
 		{
+			"selected": 4,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "bootstrap/bootstrap.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3405,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2088,
+								2088
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1017.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "peer/peer.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1769,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1340,
+								1340
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 56.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "peer/channel-manager.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3383,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1870,
+								1870
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "peer/node-details.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5644,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3760,
+								3760
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1081.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "bundle.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 347266,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9,
+								9
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 778,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								778,
+								778
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "main.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 282,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								282,
+								282
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 175,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								158,
+								158
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 8,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "bootstrap/config/default.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 244,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								224,
+								224
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1097,7 +1483,7 @@
 	"project": "DTRM.sublime-project",
 	"replace":
 	{
-		"height": 44.0
+		"height": 58.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1105,6 +1491,18 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"bun",
+				"bundle.js"
+			],
+			[
+				"nod",
+				"peer/node-details.js"
+			],
+			[
+				"fin",
+				"peer/finger-table.js"
+			],
 			[
 				"finer",
 				"node_modules/webrtc-explorer/src/lib/finger-table.js"
@@ -1590,16 +1988,16 @@
 		"selected_items":
 		[
 			[
-				"",
-				"~/SOP/DHT/Chord_JS_implementation/dht.sublime-project"
-			],
-			[
 				"com",
 				"~/Compiler Project/compilers.sublime-project"
 			],
 			[
 				"np",
 				"~/Documents/NP/NP.sublime-project"
+			],
+			[
+				"",
+				"~/SOP/DHT/Chord_JS_implementation/dht.sublime-project"
 			],
 			[
 				"cp",
@@ -1655,7 +2053,7 @@
 	"show_minimap": false,
 	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 266.0,
 	"status_bar_visible": true,
 	"template_settings":
