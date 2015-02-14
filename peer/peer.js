@@ -37,7 +37,7 @@ function Peer(config) {
                         self.events.emit('registered', {
                                 peerId: regData.peerId
                         });
-                        self.nodeDetails = new NodeDetails(self.peerId, regData.n_fingers);
+                        self.nodeDetails = new NodeDetails(self, self.peerId, regData.n_fingers);
                         self.channelManager = new ChannelManager(self.peerId, bootConn, self.nodeDetails);
 
                         if (regData.destPeerId != null) {

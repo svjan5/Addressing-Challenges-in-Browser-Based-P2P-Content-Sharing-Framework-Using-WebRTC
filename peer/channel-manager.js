@@ -6,7 +6,6 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
 
         // Establish a connection to another peer
-
         self.connect = function(destPeerId) {
                 log('connecting to: ', destPeerId);
 
@@ -41,16 +40,15 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
                         // to form direct connection between peers
                         channel.signal(replyData.offer.signal);
-
                         channel.on('ready', function() {
                                 log('Peer1 : channel ready to send');
 
-                                nodeDetails.addFingerEntry(replyData.offer.destPeerId, channel);
-                                channel = nodeDetails.getFingerEntry(replyData.offer.destPeerId);
-                                channel.on('message', function(chat) {
-                                        console.log(chat);
-                                        channel.send("I am fine");
-                                });
+                                nodeDetails.bootPeer.peerId = replyData.offer.destPeerId;
+                                nodeDetails.bootPeer.connector = channel;
+                                nodeDetails.connectorTable[replyData.offer.destPeerId] = channel;
+
+                                channel.on('message', messageHandler);
+                                // nodeDetails.join();
                         });
                 });
         };
@@ -63,11 +61,16 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
                 channel.on('ready', function() {
                         log('Peer2 : ready to listen');
-                        nodeDetails.addFingerEntry(fwddData.offer.srcPeerId, channel);
-                        channel = nodeDetails.getFingerEntry(fwddData.offer.srcPeerId);
-                        channel.send("How are you?");
-                        channel.on('message', function(chat) {
-                                console.log(chat);
+
+                        channel.on('message', messageHandler);
+                        nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
+                        nodeDetails.bootPeer.connector = channel;
+                        nodeDetails.connectorTable[fwddData.offer.srcPeerId] = channel;
+
+                        channel.send({
+                                srcPeerId: fwddData.offer.destPeerId,
+                                type: "chat-init",
+                                data: "how are you?"
                         });
                 });
 
@@ -80,4 +83,24 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                 channel.signal(fwddData.offer.signal);
 
         });
+
+        function messageHandler(message){
+                var channel = nodeDetails.connectorTable[message.srcPeerId];
+                switch(message.type){
+
+                        case "chat-init":
+                                console.log(message);
+                                channel.send({
+                                        srcPeerId: self.peerId,
+                                        type: "chat-ack",
+                                        data: "I am fine"
+                                });
+                                break;
+
+                        case "chat-ack":
+                                console.log(message);
+                                break;
+
+                }
+        }
 }

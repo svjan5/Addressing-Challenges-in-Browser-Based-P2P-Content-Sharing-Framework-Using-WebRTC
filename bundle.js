@@ -1,4 +1,3 @@
-var peer;
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var node = require('./peer/peer.js');
 
@@ -8,7 +7,7 @@ var config = {
 };
 
 
-peer = new node(config);
+var peer = new node(config);
 
 peer.events.on('registered', function(data) {
         console.log('registered with Id:', data.peerId);
@@ -24,7 +23,6 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
 
         // Establish a connection to another peer
-
         self.connect = function(destPeerId) {
                 log('connecting to: ', destPeerId);
 
@@ -59,16 +57,15 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
                         // to form direct connection between peers
                         channel.signal(replyData.offer.signal);
-
                         channel.on('ready', function() {
                                 log('Peer1 : channel ready to send');
 
-                                nodeDetails.addFingerEntry(replyData.offer.destPeerId, channel);
-                                channel = nodeDetails.getFingerEntry(replyData.offer.destPeerId);
-                                channel.on('message', function(chat) {
-                                        console.log(chat);
-                                        channel.send("I am fine");
-                                });
+                                nodeDetails.bootPeer.peerId = replyData.offer.destPeerId;
+                                nodeDetails.bootPeer.connector = channel;
+                                nodeDetails.connectorTable[replyData.offer.destPeerId] = channel;
+
+                                channel.on('message', messageHandler);
+                                // nodeDetails.join();
                         });
                 });
         };
@@ -81,11 +78,16 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
                 channel.on('ready', function() {
                         log('Peer2 : ready to listen');
-                        nodeDetails.addFingerEntry(fwddData.offer.srcPeerId, channel);
-                        channel = nodeDetails.getFingerEntry(fwddData.offer.srcPeerId);
-                        channel.send("How are you?");
-                        channel.on('message', function(chat) {
-                                console.log(chat);
+
+                        channel.on('message', messageHandler);
+                        nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
+                        nodeDetails.bootPeer.connector = channel;
+                        nodeDetails.connectorTable[fwddData.offer.srcPeerId] = channel;
+
+                        channel.send({
+                                srcPeerId: fwddData.offer.destPeerId,
+                                type: "chat-init",
+                                data: "how are you?"
                         });
                 });
 
@@ -98,106 +100,77 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                 channel.signal(fwddData.offer.signal);
 
         });
+
+        function messageHandler(message){
+                var channel = nodeDetails.connectorTable[message.srcPeerId];
+                switch(message.type){
+
+                        case "chat-init":
+                                console.log(message);
+                                channel.send({
+                                        srcPeerId: self.peerId,
+                                        type: "chat-ack",
+                                        data: "I am fine"
+                                });
+                                break;
+
+                        case "chat-ack":
+                                console.log(message);
+                                break;
+
+                }
+        }
 }
 },{"simple-peer":9}],3:[function(require,module,exports){
 var Id = require('dht-id');
 exports = module.exports = NodeDetails;
 
-function NodeDetails(peerId, n_fingers) {
+function NodeDetails(peer, peerId, n_fingers) {
         var self = this;
         var MOD = Math.pow(2, n_fingers);
+        var channelManager = peer.channelManager;
 
         self.peerId = peerId;
-        self.sucessor = {
+        self.fingerTable = {};
+
+        self.bootPeer = {
+                peerId: null,
+                connector: null
+        };
+
+        self.successor = {
                 peerId: self.peerId,
                 connector: null
         };
+
         self.predecessor = {
                 peerId: null,
                 connector: null
         };
-        self.fingerTable = {};
+        
+        self.connectorTable = {};
+        // self.keys = Object.keys(self.fingerTable);
+        // self.connectorIds = [];
+        // self.connectorIds.push(self.peerId);
+
         initializeFingerTable(n_fingers);
-        self.keys = Object.keys(self.fingerTable);
-        self.connectorIds = [];
-        self.connectorIds.push(self.peerId);
+        
 
         function initializeFingerTable(n_fingers) {
                 for (var i = 0; i < n_fingers; i++) {
                         var index = (self.peerId + Math.pow(2, i)) % MOD;
                         self.fingerTable[index] = {
-                                fingerId: peerId,
+                                fingerId: self.peerId,
                                 connector: null
                         };
                 }
         }
 
-        self.addFingerEntry = function(otherPeerId, channel) {
-                var i, j, index, posToAdd;
-
-                self.connectorIds.push(otherPeerId);
-                self.connectorIds.sort(function(a,b){return a > b;});
-
-                // console.log("Inserting " + otherPeerId +" entry in finger table of "+self.peerId);
-
-                for (i = 0; i < n_fingers - 1; i++) {
-                        var flag = false;
-                        index = self.keys[i];
-
-                        for(j = 0; j<self.connectorIds.length ;j++){
-
-                                if(index <= self.connectorIds[j]) {
-                                        posToAdd = j;
-                                        flag = true;
-                                        break;
-                                }
-
-                        }
-                        if(!flag) posToAdd = 0;
-
-                        if(self.connectorIds[posToAdd] == otherPeerId){
-                                console.log("Adding "+self.connectorIds[posToAdd]+" to "+index);
-                                self.fingerTable[index].fingerId = otherPeerId;
-                                self.fingerTable[index].connector = channel;
-                        }
-                }
-                console.log(self.fingerTable);
-        }
-
-        self.getFingerEntry = function(otherPeerId) {
-                // var i, j, index, posToAdd;
-
-
-                // for (i = 0; i < n_fingers - 1; i++) {
-                //         var flag = false;
-                //         index = self.keys[i];
-                //         for(j = 0; j<self.connectorIds.length ;j++){
-                //                 if(index <= self.connectorIds[j]) {
-                //                         posToAdd = j;
-                //                         flag = true;
-                //                         break;
-                //                 }
-                //         }
-                //         if(!flag) posToAdd = n_fingers;
-                //         console.log(otherPeerId+" "+ index);
-                //         return self.fingerTable[index].connector;
-                // }
-                var i,j;
-                self.keys.sort(function(a,b){return a > b;});
-
-                if(self.keys[n_fingers-1] < otherPeerId )
-                        return self.fingerTable[self.keys[0]].connector;
-
-                for(var i=n_fingers-2; i>=0; i--){
-                        var flag = false;
-                        index = self.keys[i];
-
-                        if(index < otherPeerId){
-                                return self.fingerTable[self.keys[i+1]].connector;
-                        }
-                }
-                return self.fingerTable[self.keys[0]].connector;
-        }
+        /*self.join = function(){
+                self.successor = self.bootPeer.connector.send({
+                        
+                })
+        }*/
 
         self.findSuccessor = function(peerId) {
                 // One node in network
@@ -236,7 +209,7 @@ function NodeDetails(peerId, n_fingers) {
                 if(destPeerId == self.peerId)
                         return self.closestPrecedingFinger(peerId);
                 else{
-
+                        
                 }
         }
 
@@ -8915,7 +8888,7 @@ function Peer(config) {
                         self.events.emit('registered', {
                                 peerId: regData.peerId
                         });
-                        self.nodeDetails = new NodeDetails(self.peerId, regData.n_fingers);
+                        self.nodeDetails = new NodeDetails(self, self.peerId, regData.n_fingers);
                         self.channelManager = new ChannelManager(self.peerId, bootConn, self.nodeDetails);
 
                         if (regData.destPeerId != null) {
