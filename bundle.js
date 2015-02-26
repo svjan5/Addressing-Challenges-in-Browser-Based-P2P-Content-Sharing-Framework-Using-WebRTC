@@ -7,15 +7,18 @@ var config = {
 };
 
 
-var peer = new node(config);
+peer = new node(config);
 
 peer.events.on('registered', function(data) {
         console.log('registered with Id:', data.peerId);
 });
 
 peer.register();
-},{"./peer/peer.js":68}],2:[function(require,module,exports){
+},{"./peer/peer.js":69}],2:[function(require,module,exports){
 var SimplePeer = require('simple-peer');
+var Id = require('dht-id');
+var waitUntil = require('wait-until');
+// var sleep = require('sleep');
 
 exports = module.exports = ChannelManager;
 
@@ -64,11 +67,68 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 nodeDetails.bootPeer.connector = channel;
                                 nodeDetails.connectorTable[replyData.offer.destPeerId] = channel;
 
-                                channel.on('message', messageHandler);
-                                // nodeDetails.join();
+                                channel.on('message', self.messageHandler);
+                                // node.
+                                // self.joinNetwork();
                         });
                 });
         };
+/*
+for (var i = 0; i < chord.nodeList.length; i++) {
+
+        0 -> if(i == 0) continue;                            //0
+        0 -> var node = chord.nodeList[i];                   //0
+        0 -> node.join(chord.getNode(0));                    //0
+        1 -> var preceding = node.successor.predecessor;
+        2 -> node.stabilize();
+        3 -> if(preceding == null) node.successor.stabilize();
+        4 -> else preceding.stabilize(); 
+};
+*/
+        self.joinNetwork = function(state,data){
+                switch(state){
+                        case 0: /*Join function*/
+                                nodeDetails.predecessor = null;
+                                // bootPeer.findSucessor(self.peerId)
+                                nodeDetails.findSuccessor(nodeDetails.bootPeer.peerId, nodeDetails.peerId, []);
+                                break;
+                        case 1:
+                                channelManager.messageHandler({
+                                        srcPeerId: self.peerId,
+                                        msgId: message.msgId,
+                                        type: "response",
+                                        data: self.findSuccessor()
+                                });
+
+
+                }
+                /*var preceding;
+
+                if(nodeDetails.peerId == nodeDetails.successor){
+                        preceding = nodeDetails.predecessor;
+                }
+
+                else{
+                        var destPeerId = nodeDetails.successor;
+                        var channel = nodeDetails.connectorTable[destPeerId];
+                        var msgId = new Id().toDec();
+                        nodeDetails.responseTable[msgId] = null;
+                        console.log(channel);
+
+                        channel.send({
+                                srcPeerId: nodeDetails.peerId,
+                                msgId: msgId,
+                                type: "request",
+                                data: "nodeDetails.predecessor"
+                        });
+
+                        while (nodeDetails.responseTable[msgId] !== null){
+                                preceding = nodeDetails.responseTable[msgId];
+                                delete nodeDetails.responseTable[msgId];
+                                console.log("Preceding :" + preceding);
+                        }
+                }*/
+        }
 
         bootConn.on('p-forward-offer', function(fwddData) {
                 console.log("Peer2: signal received");
@@ -79,7 +139,7 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                 channel.on('ready', function() {
                         log('Peer2 : ready to listen');
 
-                        channel.on('message', messageHandler);
+                        channel.on('message', self.messageHandler);
                         nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
                         nodeDetails.bootPeer.connector = channel;
                         nodeDetails.connectorTable[fwddData.offer.srcPeerId] = channel;
@@ -101,14 +161,14 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
         });
 
-        function messageHandler(message){
+        self.messageHandler = function(message){
                 var channel = nodeDetails.connectorTable[message.srcPeerId];
                 switch(message.type){
 
                         case "chat-init":
                                 console.log(message);
                                 channel.send({
-                                        srcPeerId: self.peerId,
+                                        srcPeerId: peerId,
                                         type: "chat-ack",
                                         data: "I am fine"
                                 });
@@ -118,99 +178,174 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 console.log(message);
                                 break;
 
+                        case "forward":
+
+                        case "request":
+                                console.log("Request Received");
+                                console.log(message);
+                                var data = eval(message.data);
+                                // channel.send({
+                                //         srcPeerId: peerId,
+                                //         msgId: message.msgId,
+                                //         path: message.path,
+                                //         type: "response",
+                                //         data: data
+                                // });
+                                // console.log(message);
+                                break;
+
+                        case "response":
+                                console.log("In response");
+                                console.log(message);
+                                var path = message.path.split(",");
+
+                                if (path.length == 1){
+                                        console.log("For current");
+                                        nodeDetails.responseTable[message.msgId] = message.data;
+                                        console.log("Got find sucessor return :");console.log(message);
+                                }
+                                else{
+                                        console.log("Forward");
+                                        var returnPeerId = parseInt(path.pop(),10);
+                                        console.log("return Id : "+returnPeerId);
+                                        console.log(path);
+                                        message.path = path.join();
+                                        console.log(message);
+                                        var channel = nodeDetails.connectorTable[returnPeerId];
+                                        channel.send(message);
+                                }
+                                // nodeDetails.marker.resume(function(){}, message.data);
+                                break;
                 }
         }
 }
-},{"simple-peer":9}],3:[function(require,module,exports){
+},{"dht-id":7,"simple-peer":9,"wait-until":68}],3:[function(require,module,exports){
 var Id = require('dht-id');
+var waitUntil = require('wait-until');
+// var suspend = require('co-suspend');
+
 exports = module.exports = NodeDetails;
 
 function NodeDetails(peer, peerId, n_fingers) {
         var self = this;
         var MOD = Math.pow(2, n_fingers);
-        var channelManager = peer.channelManager;
 
         self.peerId = peerId;
-        self.fingerTable = {};
+        self.fingerTable = [];
 
         self.bootPeer = {
                 peerId: null,
                 connector: null
         };
 
-        self.successor = {
-                peerId: self.peerId,
-                connector: null
-        };
-
-        self.predecessor = {
-                peerId: null,
-                connector: null
-        };
+        self.successor = self.peerId;;
+        self.predecessor = null;
         
         self.connectorTable = {};
-        // self.keys = Object.keys(self.fingerTable);
-        // self.connectorIds = [];
-        // self.connectorIds.push(self.peerId);
-
+        self.responseTable = {};
+        self.marker;
         initializeFingerTable(n_fingers);
-        
 
         function initializeFingerTable(n_fingers) {
                 for (var i = 0; i < n_fingers; i++) {
-                        var index = (self.peerId + Math.pow(2, i)) % MOD;
-                        self.fingerTable[index] = {
-                                fingerId: self.peerId,
-                                connector: null
+                        var start = (self.peerId + Math.pow(2, i)) % MOD;
+                        self.fingerTable[i] = {
+                                start: start,
+                                fingerId: self.peerId
                         };
                 }
         }
 
-        /*self.join = function(){
-                self.successor = self.bootPeer.connector.send({
+        // self.join = function(destPeerId){}
+        self.msgToSelf = function(srcPeerId, msgId, type, data, path){
+                peer.channelManager.messageHandler({
+                        srcPeerId: srcPeerId,
+                        msgId: msgId,
+                        path: path,
+                        type: type,
+                        data: data
+                });
+        }
+
+        self.findSuccessor = function(destPeerId, id, path){
+                var msgId = new Id().toDec();
+                self.responseTable[msgId] = null;
+
+                if(destPeerId == self.peerId){
+                        if(self.peerId == self.successor)
+                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path);
                         
-                })
-        }*/
-
-        self.findSuccessor = function(peerId) {
-                // One node in network
-                if (self.peerId == self.successor.peerId)
-                        return self.peerId;
-
-                if (isBetween(peerId, self.peerId, self.successor.peerId) || peerId == self.successor.peerId)
-                        return self.successor;
-
-                else {
-                        var node = self.closestPrecedingFinger(peerId);
-                        if (node == self)
-                                return self.successor.findSuccessor(peerId);
-                        else
-                                return node.findSuccessor(peerId);
+                        else if(isBetween(id, self.peerId, self.successor) || id == self.successor)
+                                self.msgToSelf(self.peerId, msgId, "response", self.successor, path);
+                        
+                        else{
+                                var node = self.closestPrecedingFinger(id);
+                                if( node == self.peerId )
+                                        self.findSuccessor(self.successor, id, path); //O(n)
+                                else
+                                        self.findSuccessor(node, id, path);           //O(log(n))
+                        }
                 }
-        }
 
-        self.findPredecessor = function(peerId){
-                var remotePeerId = self.peerId;
-                while(!isBetween(peerId, remotePeerId, getSucessor(remotePeerId))){
-                        remotePeerId = getClosestPrecedingFinger(remotePeerId, peerId);
-                }
-                return remotePeerId;
-        }
-
-        self.closestPrecedingFinger = function(peerId){
-                for (var i = n_fingers - 1; i >= 0; i--) {
-                        var fingerEntry = self.fingerTable[self.keys[i]].fingerId;
-                        if (isBetween(fingerEntry, self.peerId, peerId))
-                                return fingerEntry;
-                }
-        }
-
-        self.getClosestPrecedingFinger = function(destPeerId,peerId){
-                if(destPeerId == self.peerId)
-                        return self.closestPrecedingFinger(peerId);
                 else{
-                        
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\""+path+"\")"
+                        });
                 }
+                return msgId;
+        }
+
+        // self.findSuccessor = function(destPeerId, id){
+        //         if(destPeerId == self.peerId)
+        //                 data = self.peerId;
+
+        //         if (isBetween(id, self.peerId, self.successor) || id == self.successor)
+        //                 data = self.successor;
+
+        //         else {
+        //                 var precedingId = self.closestPrecedingFinger(id);
+        //                 if (precedingId == self.peerId)
+        //                         return self.getFindSuccessor(self.successor, id);
+        //                 else
+        //                         return self.getFindSuccessor(precedingId, id);
+        //         }
+        //                 channelManager.messageHandler({
+        //                                 srcPeerId: self.peerId,
+        //                                 msgId: message.msgId,
+        //                                 type: "response",
+        //                                 data: self.findSuccessor()
+        //                         });
+
+        //         var channel = self.connectorTable[destPeerId];
+        //         var msgId = new Id().toDec();
+        //         self.responseTable[msgId] = null;
+        //         channel.send({
+        //                 srcPeerId: self.peerId,
+        //                 msgId: msgId,
+        //                 type: "request",
+        //                 data: "nodeDetails.getFindSuccessor("+ destPeerId +","+ id +")"
+        //         });
+
+        //         var response = self.responseTable[msgId];
+        //         console.log("GetFindSuccessor returns " + response);
+        //         delete self.responseTable[msgId];
+        //         return response;
+        // }
+
+        self.closestPrecedingFinger = function(id){
+                for (var i = n_fingers - 1; i >= 0; i--) {
+                        var fingerId = self.fingerTable[i].fingerId;
+                        if (isBetween(fingerId, self.peerId, id))
+                                return fingerId;
+                }
+                return self.peerId;
         }
 
         /* peerId <belongs to> (fromKey,toKey) exclusive*/
@@ -220,7 +355,7 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
 }
-},{"dht-id":7}],4:[function(require,module,exports){
+},{"dht-id":7,"wait-until":68}],4:[function(require,module,exports){
 (function() {
   function checkColorSupport() {
     var chrome = !!window.chrome,
@@ -530,7 +665,7 @@ function createJs(sync) {
 }
 
 }).call(this,require('_process'))
-},{"_process":76}],7:[function(require,module,exports){
+},{"_process":77}],7:[function(require,module,exports){
 var sha1 = require('git-sha1');
 
 exports = module.exports = Id;
@@ -1510,7 +1645,7 @@ function speedHack (obj) {
     obj.sdp = s[0] + 'b=AS:1638400' + s[1]
 }
 
-},{"debug":10,"events":73,"extend.js":13,"hat":14,"inherits":15,"is-typedarray":16,"once":18,"stream":88,"typedarray-to-buffer":19}],10:[function(require,module,exports){
+},{"debug":10,"events":74,"extend.js":13,"hat":14,"inherits":15,"is-typedarray":16,"once":18,"stream":89,"typedarray-to-buffer":19}],10:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -2227,7 +2362,7 @@ module.exports = function (arr) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":69,"is-typedarray":16}],20:[function(require,module,exports){
+},{"buffer":70,"is-typedarray":16}],20:[function(require,module,exports){
 
 module.exports = require('./lib/');
 
@@ -8849,6 +8984,91 @@ function toArray(list, index) {
 }
 
 },{}],68:[function(require,module,exports){
+(function (process){
+module.exports = exports = function waitUntil(interval, times, condition, cb) {
+    if (typeof interval == 'undefined') {
+        return new WaitUntil();
+    } else {
+        return new WaitUntil()
+            .interval(interval)
+            .times(times)
+            .condition(condition)
+            .done(cb);
+    }
+};
+
+function WaitUntil() {
+    var self = this;
+}
+
+WaitUntil.prototype.interval = function(_interval) {
+    var self = this;
+
+    self._interval = _interval;
+    return self;
+};
+
+WaitUntil.prototype.times = function(_times) {
+    var self = this;
+
+    self._times = _times;
+    return self;
+};
+
+WaitUntil.prototype.condition = function(_condition, cb) {
+    var self = this;
+
+    self._condition = _condition;
+    if (cb) {
+        return self.done(cb);
+    } else {
+        return self;
+    }
+};
+
+WaitUntil.prototype.done = function(cb) {
+    var self = this;
+
+    if (!self._times) {
+        throw new Error('waitUntil.times() not called yet');
+    }
+    if (!self._interval) {
+        throw new Error('waitUntil.interval() not called yet');
+    }
+    if (!self._condition) {
+        throw new Error('waitUntil.condition() not called yet');
+    }
+
+    (function runCheck(i, prevResult) {
+        if (i == self._times) {
+            cb(prevResult);
+        } else {
+            setTimeout(function() {
+                function gotConditionResult(result) {
+                    if (result) {
+                        cb(result);
+                    } else {
+                        runCheck(i + 1, result);
+                    }
+                }
+
+                if (self._condition.length) {
+                    self._condition(gotConditionResult);
+                } else {
+                    // don't release Zalgo
+                    process.nextTick(function() {
+                        gotConditionResult(self._condition());
+                    });
+                }
+            }, self._interval);
+        }
+    })(0);
+
+    return self;
+};
+
+}).call(this,require('_process'))
+},{"_process":77}],69:[function(require,module,exports){
 var ee2 = require('eventemitter2').EventEmitter2;
 var io = require('socket.io-client');
 var bows = require('bows');
@@ -8900,7 +9120,7 @@ function Peer(config) {
                 bootConn.emit('b-register', {});
         };
 }
-},{"./channel-manager.js":2,"./node-details.js":3,"bows":4,"eventemitter2":8,"socket.io-client":20}],69:[function(require,module,exports){
+},{"./channel-manager.js":2,"./node-details.js":3,"bows":4,"eventemitter2":8,"socket.io-client":20}],70:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -10218,7 +10438,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":70,"ieee754":71,"is-array":72}],70:[function(require,module,exports){
+},{"base64-js":71,"ieee754":72,"is-array":73}],71:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -10344,7 +10564,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -10430,7 +10650,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 
 /**
  * isArray
@@ -10465,7 +10685,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -10768,11 +10988,11 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}],75:[function(require,module,exports){
+},{"dup":15}],76:[function(require,module,exports){
 arguments[4][58][0].apply(exports,arguments)
-},{"dup":58}],76:[function(require,module,exports){
+},{"dup":58}],77:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -10831,10 +11051,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":78}],78:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":79}],79:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -10927,7 +11147,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":80,"./_stream_writable":82,"_process":76,"core-util-is":83,"inherits":74}],79:[function(require,module,exports){
+},{"./_stream_readable":81,"./_stream_writable":83,"_process":77,"core-util-is":84,"inherits":75}],80:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -10975,7 +11195,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":81,"core-util-is":83,"inherits":74}],80:[function(require,module,exports){
+},{"./_stream_transform":82,"core-util-is":84,"inherits":75}],81:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -11961,7 +12181,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"_process":76,"buffer":69,"core-util-is":83,"events":73,"inherits":74,"isarray":75,"stream":88,"string_decoder/":89}],81:[function(require,module,exports){
+},{"_process":77,"buffer":70,"core-util-is":84,"events":74,"inherits":75,"isarray":76,"stream":89,"string_decoder/":90}],82:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -12173,7 +12393,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":78,"core-util-is":83,"inherits":74}],82:[function(require,module,exports){
+},{"./_stream_duplex":79,"core-util-is":84,"inherits":75}],83:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -12563,7 +12783,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":78,"_process":76,"buffer":69,"core-util-is":83,"inherits":74,"stream":88}],83:[function(require,module,exports){
+},{"./_stream_duplex":79,"_process":77,"buffer":70,"core-util-is":84,"inherits":75,"stream":89}],84:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -12673,10 +12893,10 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":69}],84:[function(require,module,exports){
+},{"buffer":70}],85:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":79}],85:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":80}],86:[function(require,module,exports){
 var Stream = require('stream'); // hack to fix a circular dependency issue when used with browserify
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = Stream;
@@ -12686,13 +12906,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":78,"./lib/_stream_passthrough.js":79,"./lib/_stream_readable.js":80,"./lib/_stream_transform.js":81,"./lib/_stream_writable.js":82,"stream":88}],86:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":79,"./lib/_stream_passthrough.js":80,"./lib/_stream_readable.js":81,"./lib/_stream_transform.js":82,"./lib/_stream_writable.js":83,"stream":89}],87:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":81}],87:[function(require,module,exports){
+},{"./lib/_stream_transform.js":82}],88:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":82}],88:[function(require,module,exports){
+},{"./lib/_stream_writable.js":83}],89:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -12821,7 +13041,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":73,"inherits":74,"readable-stream/duplex.js":77,"readable-stream/passthrough.js":84,"readable-stream/readable.js":85,"readable-stream/transform.js":86,"readable-stream/writable.js":87}],89:[function(require,module,exports){
+},{"events":74,"inherits":75,"readable-stream/duplex.js":78,"readable-stream/passthrough.js":85,"readable-stream/readable.js":86,"readable-stream/transform.js":87,"readable-stream/writable.js":88}],90:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -13044,4 +13264,4 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":69}]},{},[1]);
+},{"buffer":70}]},{},[1]);

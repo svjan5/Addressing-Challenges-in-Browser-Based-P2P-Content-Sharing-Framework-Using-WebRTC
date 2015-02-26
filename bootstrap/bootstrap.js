@@ -55,6 +55,7 @@ var prompt = repl.start({
         prompt: 'server>'
 });
 prompt.context.peers = peers;
+prompt.context.listPeer = function() {return Object.keys(peers)};
 
 function mainServerFunction(socket) {
 

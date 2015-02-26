@@ -6,7 +6,7 @@ var config = {
 };
 
 
-var peer = new node(config);
+peer = new node(config);
 
 peer.events.on('registered', function(data) {
         console.log('registered with Id:', data.peerId);

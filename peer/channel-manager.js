@@ -1,4 +1,7 @@
 var SimplePeer = require('simple-peer');
+var Id = require('dht-id');
+var waitUntil = require('wait-until');
+// var sleep = require('sleep');
 
 exports = module.exports = ChannelManager;
 
@@ -47,11 +50,68 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 nodeDetails.bootPeer.connector = channel;
                                 nodeDetails.connectorTable[replyData.offer.destPeerId] = channel;
 
-                                channel.on('message', messageHandler);
-                                // nodeDetails.join();
+                                channel.on('message', self.messageHandler);
+                                // node.
+                                // self.joinNetwork();
                         });
                 });
         };
+/*
+for (var i = 0; i < chord.nodeList.length; i++) {
+
+        0 -> if(i == 0) continue;                            //0
+        0 -> var node = chord.nodeList[i];                   //0
+        0 -> node.join(chord.getNode(0));                    //0
+        1 -> var preceding = node.successor.predecessor;
+        2 -> node.stabilize();
+        3 -> if(preceding == null) node.successor.stabilize();
+        4 -> else preceding.stabilize(); 
+};
+*/
+        self.joinNetwork = function(state,data){
+                switch(state){
+                        case 0: /*Join function*/
+                                nodeDetails.predecessor = null;
+                                // bootPeer.findSucessor(self.peerId)
+                                nodeDetails.findSuccessor(nodeDetails.bootPeer.peerId, nodeDetails.peerId, []);
+                                break;
+                        case 1:
+                                channelManager.messageHandler({
+                                        srcPeerId: self.peerId,
+                                        msgId: message.msgId,
+                                        type: "response",
+                                        data: self.findSuccessor()
+                                });
+
+
+                }
+                /*var preceding;
+
+                if(nodeDetails.peerId == nodeDetails.successor){
+                        preceding = nodeDetails.predecessor;
+                }
+
+                else{
+                        var destPeerId = nodeDetails.successor;
+                        var channel = nodeDetails.connectorTable[destPeerId];
+                        var msgId = new Id().toDec();
+                        nodeDetails.responseTable[msgId] = null;
+                        console.log(channel);
+
+                        channel.send({
+                                srcPeerId: nodeDetails.peerId,
+                                msgId: msgId,
+                                type: "request",
+                                data: "nodeDetails.predecessor"
+                        });
+
+                        while (nodeDetails.responseTable[msgId] !== null){
+                                preceding = nodeDetails.responseTable[msgId];
+                                delete nodeDetails.responseTable[msgId];
+                                console.log("Preceding :" + preceding);
+                        }
+                }*/
+        }
 
         bootConn.on('p-forward-offer', function(fwddData) {
                 console.log("Peer2: signal received");
@@ -62,7 +122,7 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                 channel.on('ready', function() {
                         log('Peer2 : ready to listen');
 
-                        channel.on('message', messageHandler);
+                        channel.on('message', self.messageHandler);
                         nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
                         nodeDetails.bootPeer.connector = channel;
                         nodeDetails.connectorTable[fwddData.offer.srcPeerId] = channel;
@@ -84,14 +144,14 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
         });
 
-        function messageHandler(message){
+        self.messageHandler = function(message){
                 var channel = nodeDetails.connectorTable[message.srcPeerId];
                 switch(message.type){
 
                         case "chat-init":
                                 console.log(message);
                                 channel.send({
-                                        srcPeerId: self.peerId,
+                                        srcPeerId: peerId,
                                         type: "chat-ack",
                                         data: "I am fine"
                                 });
@@ -101,6 +161,44 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 console.log(message);
                                 break;
 
+                        case "forward":
+
+                        case "request":
+                                console.log("Request Received");
+                                console.log(message);
+                                var data = eval(message.data);
+                                // channel.send({
+                                //         srcPeerId: peerId,
+                                //         msgId: message.msgId,
+                                //         path: message.path,
+                                //         type: "response",
+                                //         data: data
+                                // });
+                                // console.log(message);
+                                break;
+
+                        case "response":
+                                console.log("In response");
+                                console.log(message);
+                                var path = message.path.split(",");
+
+                                if (path.length == 1){
+                                        console.log("For current");
+                                        nodeDetails.responseTable[message.msgId] = message.data;
+                                        console.log("Got find sucessor return :");console.log(message);
+                                }
+                                else{
+                                        console.log("Forward");
+                                        var returnPeerId = parseInt(path.pop(),10);
+                                        console.log("return Id : "+returnPeerId);
+                                        console.log(path);
+                                        message.path = path.join();
+                                        console.log(message);
+                                        var channel = nodeDetails.connectorTable[returnPeerId];
+                                        channel.send(message);
+                                }
+                                // nodeDetails.marker.resume(function(){}, message.data);
+                                break;
                 }
         }
 }
