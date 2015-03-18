@@ -13,3 +13,7 @@ peer.events.on('registered', function(data) {
 });
 
 peer.register();
+
+setTimeout(function () {
+	document.title = "Node: "+peer.peerId;
+}, 1000);

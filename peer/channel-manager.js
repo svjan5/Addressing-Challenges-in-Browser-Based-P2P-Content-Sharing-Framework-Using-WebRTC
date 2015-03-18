@@ -1,7 +1,5 @@
 var SimplePeer = require('simple-peer');
 var Id = require('dht-id');
-var waitUntil = require('wait-until');
-// var sleep = require('sleep');
 
 exports = module.exports = ChannelManager;
 
@@ -68,14 +66,30 @@ for (var i = 0; i < chord.nodeList.length; i++) {
         4 -> else preceding.stabilize(); 
 };
 */
-        self.joinNetwork = function(state,data){
-                switch(state){
-                        case 0: /*Join function*/
+        self.joinNetwork = function(state, data) {
+                switch (state) {
+
+                        case 0:
+                                /*Join function*/
+
                                 nodeDetails.predecessor = null;
-                                // bootPeer.findSucessor(self.peerId)
-                                nodeDetails.findSuccessor(nodeDetails.bootPeer.peerId, nodeDetails.peerId, []);
+                                /*bootPeer.findSucessor(self.peerId)*/
+                                var msgId = new Id().toDec();
+                                nodeDetails.responseTable[msgId] = null;
+
+                                nodeDetails.findSuccessor(
+                                        nodeDetails.bootPeer.peerId,
+                                        nodeDetails.peerId,
+                                        "",
+                                        msgId,
+                                        "self.joinNetwork(1," + msgId + ")"
+                                );
                                 break;
+
                         case 1:
+                                console.log("Hurray");
+                                nodeDetails.successor = nodeDetails.responseTable[data];
+
                                 channelManager.messageHandler({
                                         srcPeerId: self.peerId,
                                         msgId: message.msgId,
@@ -85,32 +99,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
 
                 }
-                /*var preceding;
-
-                if(nodeDetails.peerId == nodeDetails.successor){
-                        preceding = nodeDetails.predecessor;
-                }
-
-                else{
-                        var destPeerId = nodeDetails.successor;
-                        var channel = nodeDetails.connectorTable[destPeerId];
-                        var msgId = new Id().toDec();
-                        nodeDetails.responseTable[msgId] = null;
-                        console.log(channel);
-
-                        channel.send({
-                                srcPeerId: nodeDetails.peerId,
-                                msgId: msgId,
-                                type: "request",
-                                data: "nodeDetails.predecessor"
-                        });
-
-                        while (nodeDetails.responseTable[msgId] !== null){
-                                preceding = nodeDetails.responseTable[msgId];
-                                delete nodeDetails.responseTable[msgId];
-                                console.log("Preceding :" + preceding);
-                        }
-                }*/
         }
 
         bootConn.on('p-forward-offer', function(fwddData) {
@@ -161,20 +149,11 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 console.log(message);
                                 break;
 
-                        case "forward":
 
                         case "request":
                                 console.log("Request Received");
-                                console.log(message);
-                                var data = eval(message.data);
-                                // channel.send({
-                                //         srcPeerId: peerId,
-                                //         msgId: message.msgId,
-                                //         path: message.path,
-                                //         type: "response",
-                                //         data: data
-                                // });
                                 // console.log(message);
+                                var data = eval(message.data);
                                 break;
 
                         case "response":
@@ -183,21 +162,21 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 var path = message.path.split(",");
 
                                 if (path.length == 1){
-                                        console.log("For current");
                                         nodeDetails.responseTable[message.msgId] = message.data;
-                                        console.log("Got find sucessor return :");console.log(message);
+                                        eval(message.func);
+                                        console.log("Eval executing");
                                 }
                                 else{
                                         console.log("Forward");
                                         var returnPeerId = parseInt(path.pop(),10);
-                                        console.log("return Id : "+returnPeerId);
-                                        console.log(path);
                                         message.path = path.join();
-                                        console.log(message);
                                         var channel = nodeDetails.connectorTable[returnPeerId];
                                         channel.send(message);
                                 }
-                                // nodeDetails.marker.resume(function(){}, message.data);
+                                break;
+
+                        case "make-connection":
+
                                 break;
                 }
         }

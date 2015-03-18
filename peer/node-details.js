@@ -1,6 +1,4 @@
 var Id = require('dht-id');
-var waitUntil = require('wait-until');
-// var suspend = require('co-suspend');
 
 exports = module.exports = NodeDetails;
 
@@ -35,33 +33,31 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
         // self.join = function(destPeerId){}
-        self.msgToSelf = function(srcPeerId, msgId, type, data, path){
+        self.msgToSelf = function(srcPeerId, msgId, type, data, path, func){
                 peer.channelManager.messageHandler({
                         srcPeerId: srcPeerId,
                         msgId: msgId,
                         path: path,
                         type: type,
-                        data: data
+                        data: data,
+                        func: func
                 });
         }
 
-        self.findSuccessor = function(destPeerId, id, path){
-                var msgId = new Id().toDec();
-                self.responseTable[msgId] = null;
-
+        self.findSuccessor = function(destPeerId, id, path, msgId, func){
                 if(destPeerId == self.peerId){
                         if(self.peerId == self.successor)
-                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path);
+                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func);
                         
                         else if(isBetween(id, self.peerId, self.successor) || id == self.successor)
-                                self.msgToSelf(self.peerId, msgId, "response", self.successor, path);
+                                self.msgToSelf(self.peerId, msgId, "response", self.successor, path, func);
                         
                         else{
                                 var node = self.closestPrecedingFinger(id);
                                 if( node == self.peerId )
-                                        self.findSuccessor(self.successor, id, path); //O(n)
+                                        self.findSuccessor(self.successor, id, path, msgId, func); //O(n)
                                 else
-                                        self.findSuccessor(node, id, path);           //O(log(n))
+                                        self.findSuccessor(node, id, path, msgId, func);           //O(log(n))
                         }
                 }
 
@@ -74,10 +70,10 @@ function NodeDetails(peer, peerId, n_fingers) {
                                 msgId: msgId,
                                 path: path,
                                 type: "request",
-                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\""+path+"\")"
+                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\""+path+"\"," + msgId+",\""+ func + "\" )",
+                                func: func
                         });
                 }
-                return msgId;
         }
 
         self.closestPrecedingFinger = function(id){
