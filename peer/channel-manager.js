@@ -5,6 +5,8 @@ exports = module.exports = ChannelManager;
 
 function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
+        var isStabilize = true;
+        var stabilizeData;
 
         // Establish a connection to another peer
         self.connect = function(destPeerId) {
@@ -87,16 +89,74 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case 1:
-                                console.log("Hurray");
+                                console.log("Join Network case 0 successful");
                                 nodeDetails.successor = nodeDetails.responseTable[data];
+                                delete nodeDetails.responseTable[msgId];
+                                isStabilize = false;
 
-                                channelManager.messageHandler({
-                                        srcPeerId: self.peerId,
-                                        msgId: message.msgId,
-                                        type: "response",
-                                        data: self.findSuccessor()
-                                });
+                        case "stabilize":
 
+                                if(isStabilize) {
+                                        console.log("Stabilize got data:");
+                                        console.log(data);
+                                        stabilizeData = data;
+                                }
+                                var msgId = new Id().toDec();
+                                nodeDetails.responseTable[msgId] = null;
+
+                                nodeDetails.findPredOfSucc(
+                                        nodeDetails.successor,
+                                        "",
+                                        msgId,
+                                        "self.joinNetwork(2," + msgId + ")"
+                                );
+
+                                break;
+
+                        case 2:
+                                console.log("Join Network case 1 successful - value:"+ nodeDetails.responseTable[data]);
+                                nodeDetails.succPreceding = nodeDetails.responseTable[data];
+                                delete nodeDetails.responseTable[msgId];
+
+                                if(nodeDetails.succPreceding != null){
+                                        var key = nodeDetails.succPreceding;
+                                        if ((nodeDetails.peerId == nodeDetails.successor) || isBetween(key, nodeDetails.peerId, nodeDetails.successor))
+                                                nodeDetails.successor = nodeDetails.succPreceding;
+                                }
+
+                                var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" 
+                                                          : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId  + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
+
+                                isStabilize = true;
+
+                                var msgId = new Id().toDec();                                
+                                nodeDetails.notifyPredecessor(
+                                        nodeDetails.successor,
+                                        nodeDetails.peerId,
+                                        "",
+                                        msgId,
+                                        func
+                                );
+
+                                break;
+
+                        case 3:
+                                console.log("Join Network case 2 successful");
+                                var msgId = new Id().toDec(); 
+
+                                var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor 
+                                                                                          : nodeDetails.succPreceding;
+                                nodeDetails.stabilize(
+                                        callStabilizeOn,
+                                        "",
+                                        msgId,
+                                        "self.joinNetwork(4," + msgId + ")"
+                                );
+                                break;
+
+                        case 4:
+                                console.log("Join Network case 3 successful : "+ data);
+                                break;
 
                 }
         }
@@ -152,7 +212,8 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                         case "request":
                                 console.log("Request Received");
-                                // console.log(message);
+                                console.log(message);
+                                console.log("Executing :"+ message.data);
                                 var data = eval(message.data);
                                 break;
 
@@ -163,8 +224,8 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                 if (path.length == 1){
                                         nodeDetails.responseTable[message.msgId] = message.data;
+                                        console.log("Executing :"+message.func);
                                         eval(message.func);
-                                        console.log("Eval executing");
                                 }
                                 else{
                                         console.log("Forward");

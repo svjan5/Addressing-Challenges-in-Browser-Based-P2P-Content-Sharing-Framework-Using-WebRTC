@@ -27,6 +27,8 @@ exports = module.exports = ChannelManager;
 
 function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
+        var isStabilize = true;
+        var stabilizeData;
 
         // Establish a connection to another peer
         self.connect = function(destPeerId) {
@@ -109,44 +111,76 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case 1:
-                                console.log("Hurray");
+                                console.log("Join Network case 0 successful");
                                 nodeDetails.successor = nodeDetails.responseTable[data];
-
-                                channelManager.messageHandler({
-                                        srcPeerId: self.peerId,
-                                        msgId: message.msgId,
-                                        type: "response",
-                                        data: self.findSuccessor()
-                                });
-
-
-                }
-                /*var preceding;
-
-                if(nodeDetails.peerId == nodeDetails.successor){
-                        preceding = nodeDetails.predecessor;
-                }
-
-                else{
-                        var destPeerId = nodeDetails.successor;
-                        var channel = nodeDetails.connectorTable[destPeerId];
-                        var msgId = new Id().toDec();
-                        nodeDetails.responseTable[msgId] = null;
-                        console.log(channel);
-
-                        channel.send({
-                                srcPeerId: nodeDetails.peerId,
-                                msgId: msgId,
-                                type: "request",
-                                data: "nodeDetails.predecessor"
-                        });
-
-                        while (nodeDetails.responseTable[msgId] !== null){
-                                preceding = nodeDetails.responseTable[msgId];
                                 delete nodeDetails.responseTable[msgId];
-                                console.log("Preceding :" + preceding);
-                        }
-                }*/
+                                isStabilize = false;
+
+                        case "stabilize":
+
+                                if(isStabilize) {
+                                        console.log("Stabilize got data:");
+                                        console.log(data);
+                                        stabilizeData = data;
+                                }
+                                var msgId = new Id().toDec();
+                                nodeDetails.responseTable[msgId] = null;
+
+                                nodeDetails.findPredOfSucc(
+                                        nodeDetails.successor,
+                                        "",
+                                        msgId,
+                                        "self.joinNetwork(2," + msgId + ")"
+                                );
+
+                                break;
+
+                        case 2:
+                                console.log("Join Network case 1 successful - value:"+ nodeDetails.responseTable[data]);
+                                nodeDetails.succPreceding = nodeDetails.responseTable[data];
+                                delete nodeDetails.responseTable[msgId];
+
+                                if(nodeDetails.succPreceding != null){
+                                        var key = nodeDetails.succPreceding;
+                                        if ((nodeDetails.peerId == nodeDetails.successor) || isBetween(key, nodeDetails.peerId, nodeDetails.successor))
+                                                nodeDetails.successor = nodeDetails.succPreceding;
+                                }
+
+                                var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" 
+                                                          : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId  + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
+
+                                isStabilize = true;
+
+                                var msgId = new Id().toDec();                                
+                                nodeDetails.notifyPredecessor(
+                                        nodeDetails.successor,
+                                        nodeDetails.peerId,
+                                        "",
+                                        msgId,
+                                        func
+                                );
+
+                                break;
+
+                        case 3:
+                                console.log("Join Network case 2 successful");
+                                var msgId = new Id().toDec(); 
+
+                                var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor 
+                                                                                          : nodeDetails.succPreceding;
+                                nodeDetails.stabilize(
+                                        callStabilizeOn,
+                                        "",
+                                        msgId,
+                                        "self.joinNetwork(4," + msgId + ")"
+                                );
+                                break;
+
+                        case 4:
+                                console.log("Join Network case 3 successful : "+ data);
+                                break;
+
+                }
         }
 
         bootConn.on('p-forward-offer', function(fwddData) {
@@ -200,7 +234,8 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                         case "request":
                                 console.log("Request Received");
-                                // console.log(message);
+                                console.log(message);
+                                console.log("Executing :"+ message.data);
                                 var data = eval(message.data);
                                 break;
 
@@ -211,20 +246,20 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                 if (path.length == 1){
                                         nodeDetails.responseTable[message.msgId] = message.data;
+                                        console.log("Executing :"+message.func);
                                         eval(message.func);
-                                        console.log("Eval executing");
                                 }
                                 else{
                                         console.log("Forward");
                                         var returnPeerId = parseInt(path.pop(),10);
                                         message.path = path.join();
-                                        // console.log("return Id : "+returnPeerId);
-                                        // console.log(path);
-                                        // console.log(message);
                                         var channel = nodeDetails.connectorTable[returnPeerId];
                                         channel.send(message);
                                 }
-                                // nodeDetails.marker.resume(function(){}, message.data);
+                                break;
+
+                        case "make-connection":
+
                                 break;
                 }
         }
@@ -248,6 +283,7 @@ function NodeDetails(peer, peerId, n_fingers) {
 
         self.successor = self.peerId;;
         self.predecessor = null;
+        self.succPreceding = null;
         
         self.connectorTable = {};
         self.responseTable = {};
@@ -302,10 +338,81 @@ function NodeDetails(peer, peerId, n_fingers) {
                                 msgId: msgId,
                                 path: path,
                                 type: "request",
-                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\""+path+"\"," + msgId+",\""+ func + "\" )",
+                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
                                 func: func
                         });
                 }
+        }
+
+        self.findPredOfSucc = function(destPeerId, path, msgId, func){
+                if( destPeerId == self.peerId) 
+                        self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func);
+                else{
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.findPredOfSucc(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
+                                func: func
+                        });
+                }
+
+        }
+
+        self.notifyPredecessor = function(destPeerId, data, path, msgId, func){
+                if( destPeerId == self.peerId){
+                        console.log("Hello");
+                        self.predecessor = data;
+                        self.msgToSelf(self.peerId, msgId, "response", null, path, func);
+                }
+                else{
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.notifyPredecessor(" + destPeerId + "," + data + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
+                                func: func
+                        });
+                }
+
+        }
+         //"nodeDetails.stabilize(52,",45",38326717949206,"self.joinNetwork(4,38326717949206)" )"
+        self.stabilize = function(destPeerId, path, msgId, func){
+                if( destPeerId == self.peerId){
+                        var data = {
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                type: "response",
+                                data: null,
+                                path: path,
+                                func: func
+                        }
+                        peer.channelManager.joinNetwork( "stabilize", data);
+                        // self.msgToSelf(self.peerId, msgId, "response", null, path, func);
+                }
+                
+                else{
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.stabilize(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
+                                func: func
+                        });
+                }
+
         }
 
         self.closestPrecedingFinger = function(id){

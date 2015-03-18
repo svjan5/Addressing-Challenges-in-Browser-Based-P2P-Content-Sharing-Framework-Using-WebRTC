@@ -16,6 +16,7 @@ function NodeDetails(peer, peerId, n_fingers) {
 
         self.successor = self.peerId;;
         self.predecessor = null;
+        self.succPreceding = null;
         
         self.connectorTable = {};
         self.responseTable = {};
@@ -70,10 +71,81 @@ function NodeDetails(peer, peerId, n_fingers) {
                                 msgId: msgId,
                                 path: path,
                                 type: "request",
-                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\""+path+"\"," + msgId+",\""+ func + "\" )",
+                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
                                 func: func
                         });
                 }
+        }
+
+        self.findPredOfSucc = function(destPeerId, path, msgId, func){
+                if( destPeerId == self.peerId) 
+                        self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func);
+                else{
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.findPredOfSucc(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
+                                func: func
+                        });
+                }
+
+        }
+
+        self.notifyPredecessor = function(destPeerId, data, path, msgId, func){
+                if( destPeerId == self.peerId){
+                        console.log("Hello");
+                        self.predecessor = data;
+                        self.msgToSelf(self.peerId, msgId, "response", null, path, func);
+                }
+                else{
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.notifyPredecessor(" + destPeerId + "," + data + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
+                                func: func
+                        });
+                }
+
+        }
+         //"nodeDetails.stabilize(52,",45",38326717949206,"self.joinNetwork(4,38326717949206)" )"
+        self.stabilize = function(destPeerId, path, msgId, func){
+                if( destPeerId == self.peerId){
+                        var data = {
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                type: "response",
+                                data: null,
+                                path: path,
+                                func: func
+                        }
+                        peer.channelManager.joinNetwork( "stabilize", data);
+                        // self.msgToSelf(self.peerId, msgId, "response", null, path, func);
+                }
+                
+                else{
+                        var channel = self.connectorTable[destPeerId];
+                        path += ","+ self.peerId;
+
+                        channel.send({
+                                srcPeerId: self.peerId,
+                                msgId: msgId,
+                                path: path,
+                                type: "request",
+                                data: "nodeDetails.stabilize(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
+                                func: func
+                        });
+                }
+
         }
 
         self.closestPrecedingFinger = function(id){
