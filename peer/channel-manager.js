@@ -42,7 +42,6 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                         log('Peer1: offerAccepted');
 
                         // to form direct connection between peers
-                        channel.signal(replyData.offer.signal);
                         channel.on('ready', function() {
                                 log('Peer1 : channel ready to send');
 
@@ -54,6 +53,8 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 // node.
                                 // self.joinNetwork();
                         });
+
+                        channel.signal(replyData.offer.signal);
                 });
         };
 /*
@@ -85,6 +86,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         "",
                                         msgId,
                                         "self.joinNetwork(1," + msgId + ")"
+
                                 );
                                 break;
 
@@ -101,6 +103,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         console.log(data);
                                         stabilizeData = data;
                                 }
+
                                 var msgId = new Id().toDec();
                                 nodeDetails.responseTable[msgId] = null;
 
@@ -120,15 +123,17 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                 if(nodeDetails.succPreceding != null){
                                         var key = nodeDetails.succPreceding;
-                                        if ((nodeDetails.peerId == nodeDetails.successor) || isBetween(key, nodeDetails.peerId, nodeDetails.successor))
+                                        if ((nodeDetails.peerId == nodeDetails.successor) || isBetween(key, nodeDetails.peerId, nodeDetails.successor)) {
+                                                console.log("HelloInside");
                                                 nodeDetails.successor = nodeDetails.succPreceding;
+                                        }
                                 }
-
+                                console.log("Hello");
                                 var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" 
                                                           : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId  + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
 
                                 isStabilize = true;
-
+                                console.log("Hello2");
                                 var msgId = new Id().toDec();                                
                                 nodeDetails.notifyPredecessor(
                                         nodeDetails.successor,
@@ -137,7 +142,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         msgId,
                                         func
                                 );
-
+                                console.log("Hello3");
                                 break;
 
                         case 3:
@@ -174,12 +179,12 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
                         nodeDetails.bootPeer.connector = channel;
                         nodeDetails.connectorTable[fwddData.offer.srcPeerId] = channel;
-
                         channel.send({
                                 srcPeerId: fwddData.offer.destPeerId,
                                 type: "chat-init",
                                 data: "how are you?"
                         });
+                        self.joinNetwork(0, null);
                 });
 
                 channel.on('signal', function(signal) {

@@ -46,6 +46,7 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
         self.findSuccessor = function(destPeerId, id, path, msgId, func){
+                console.log("FIND SUCCESSOR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 if(destPeerId == self.peerId){
                         if(self.peerId == self.successor)
                                 self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func);
@@ -64,6 +65,7 @@ function NodeDetails(peer, peerId, n_fingers) {
 
                 else{
                         var channel = self.connectorTable[destPeerId];
+                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -82,6 +84,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                         self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func);
                 else{
                         var channel = self.connectorTable[destPeerId];
+                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -104,6 +107,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                 }
                 else{
                         var channel = self.connectorTable[destPeerId];
+                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -134,6 +138,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                 
                 else{
                         var channel = self.connectorTable[destPeerId];
+                        console.log("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
