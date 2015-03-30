@@ -219,13 +219,13 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
         });
         
-
+        self.channel = null;
 
         self.messageHandler = function(message){
-                var channel = nodeDetails.connectorTable[message.srcPeerId];
                 switch(message.type){
 
                         case "chat-init":
+                                var channel = nodeDetails.connectorTable[message.srcPeerId];
                                 cmlog(message);
                                 channel.send({
                                         srcPeerId: peerId,
@@ -241,7 +241,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "request":
                                 cmlog("Request Received");
                                 cmlog(message);
-                                cmlog("Executing :"+ message.data);
+                                cmlog("Executing :");
                                 var data = eval(message.data);
                                 break;
 
@@ -259,13 +259,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                         if( (typeof nodeDetails.connectorTable[conId] === 'undefined') && (message.signal != null) ){
                                                 cmlog("Form connection with "+conId);
-                                                channel.on('ready', function() {
+                                                decSig = decodeSignal(message.signal);
+
+                                                nodeDetails.channelTable[decSig.id].on('ready', function() {
                                                         cmlog('Connected to ' + conId);
-                                                        nodeDetails.connectorTable[conId] = channel;
+                                                        nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
                                                         eval(message.func);
-                                                        channel.on('message', self.messageHandler);
+                                                        nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
                                                 });
-                                                channel.signal(decodeSignal(message.signal));
+
+                                                nodeDetails.channelTable[decSig.id].signal(decSig);
                                         }
                                         else{
                                                 cmlog("Connection already exists with "+conId);
@@ -277,36 +280,43 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         var returnPeerId = parseInt(path.pop(),10);
                                         cmlog("Forward to " + returnPeerId);
                                         message.path = path.join();
-                                        channel = nodeDetails.connectorTable[returnPeerId];
+                                        var channel = nodeDetails.connectorTable[returnPeerId];
                                         channel.send(message);
                                 }
                                 break;
 
                         case "signal-accept":
                                 cmlog(message);
-                                channel = new SimplePeer({
+                                decSig = decodeSignal(message.signal);
+
+                                nodeDetails.channelTable[decSig.id] = new SimplePeer({
                                         trickle: false
                                 });
 
-                                channel.on('signal', function(signal) {
+                                nodeDetails.channelTable[decSig.id].on('signal', function(signal) {
                                         cmlog('signal-accept: signal -- Peer2 : sending back my signal data');
-                                        message.signal = encodeSignal(signal);
-                                        cmlog("After : " + message.signal);
-                                        cmlog(signal);
+
+                                        message.signal = signal;
+                                        message.signal.id = decSig.id;
+                                        message.signal = encodeSignal(message.signal);
+
+                                        // cmlog("After : " + message.signal);
+
                                         message.data = nodeDetails.peerId;
                                         nodeDetails.msgToSelf(message.srcPeerId, message.msgId, "response", message.data, message.path, message.func, message.signal);
                                 });
 
-                                channel.on('ready', function() {
+                                nodeDetails.channelTable[decSig.id].on('ready', function() {
                                         cmlog("signal-accept :ready")
-                                        channel.on('message', self.messageHandler);
-                                        nodeDetails.connectorTable[message.srcPeerId] = channel;
+
+                                        var conId = parseInt(message.path.split(",")[1]);
+                                        nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
+                                        nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
                                         cmlog("Connected to "+message.srcPeerId);
                                 });
 
-                                cmlog("Before : " + message.signal);
-                                cmlog(decodeSignal(message.signal));
-                                channel.signal(decodeSignal(message.signal));
+                                // cmlog("Before : " + message.signal);
+                                nodeDetails.channelTable[decSig.id].signal(decSig);
                                 break;
                 }
         }
@@ -339,7 +349,8 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.successor = self.peerId;;
         self.predecessor = null;
         self.succPreceding = null;
-        
+
+        self.channelTable = {};
         self.connectorTable = {};
         self.responseTable = {};
         self.marker;
@@ -424,14 +435,15 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
         self.initFindSuccessor = function(destPeerId, id, path, msgId, func){
-                var intentId = (~~(Math.random() * 1e9)).toString(36) + Date.now();
+                var signalId = new Id().toDec();
 
-                var channel = new SimplePeer({
+                self.channelTable[signalId] = new SimplePeer({
                         initiator: true,
                         trickle: false
                 });
 
-                channel.on('signal', function(signal) {
+                self.channelTable[signalId].on('signal', function(signal) {
+                        signal.id = signalId;
                         signal = encodeSignal(signal);
                         self.findSuccessor(destPeerId, id, path, msgId, func, signal);
                 });

@@ -21,7 +21,8 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.successor = self.peerId;;
         self.predecessor = null;
         self.succPreceding = null;
-        
+
+        self.channelTable = {};
         self.connectorTable = {};
         self.responseTable = {};
         self.marker;
@@ -106,14 +107,15 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
         self.initFindSuccessor = function(destPeerId, id, path, msgId, func){
-                var intentId = (~~(Math.random() * 1e9)).toString(36) + Date.now();
+                var signalId = new Id().toDec();
 
-                var channel = new SimplePeer({
+                self.channelTable[signalId] = new SimplePeer({
                         initiator: true,
                         trickle: false
                 });
 
-                channel.on('signal', function(signal) {
+                self.channelTable[signalId].on('signal', function(signal) {
+                        signal.id = signalId;
                         signal = encodeSignal(signal);
                         self.findSuccessor(destPeerId, id, path, msgId, func, signal);
                 });
