@@ -1,6 +1,10 @@
 var Id = require('dht-id');
-
+var SimplePeer = require('simple-peer');
+var bows = require('bows');
+var Base64 = {_keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function(e) {var t = ""; var n, r, i, s, o, u, a; var f = 0; e = Base64._utf8_encode(e); while (f < e.length) {n = e.charCodeAt(f++); r = e.charCodeAt(f++); i = e.charCodeAt(f++); s = n >> 2; o = (n & 3) << 4 | r >> 4; u = (r & 15) << 2 | i >> 6; a = i & 63; if (isNaN(r)) {u = a = 64 } else if (isNaN(i)) {a = 64 } t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a) } return t }, decode: function(e) {var t = ""; var n, r, i; var s, o, u, a; var f = 0; e = e.replace(/[^A-Za-z0-9\+\/\=]/g, ""); while (f < e.length) {s = this._keyStr.indexOf(e.charAt(f++)); o = this._keyStr.indexOf(e.charAt(f++)); u = this._keyStr.indexOf(e.charAt(f++)); a = this._keyStr.indexOf(e.charAt(f++)); n = s << 2 | o >> 4; r = (o & 15) << 4 | u >> 2; i = (u & 3) << 6 | a; t = t + String.fromCharCode(n); if (u != 64) {t = t + String.fromCharCode(r) } if (a != 64) {t = t + String.fromCharCode(i) } } t = Base64._utf8_decode(t); return t }, _utf8_encode: function(e) {e = e.replace(/\r\n/g, "\n"); var t = ""; for (var n = 0; n < e.length; n++) {var r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r) } else if (r > 127 && r < 2048) {t += String.fromCharCode(r >> 6 | 192); t += String.fromCharCode(r & 63 | 128) } else {t += String.fromCharCode(r >> 12 | 224); t += String.fromCharCode(r >> 6 & 63 | 128); t += String.fromCharCode(r & 63 | 128) } } return t }, _utf8_decode: function(e) {var t = ""; var n = 0; var r = c1 = c2 = 0; while (n < e.length) {r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r); n++ } else if (r > 191 && r < 224) {c2 = e.charCodeAt(n + 1); t += String.fromCharCode((r & 31) << 6 | c2 & 63); n += 2 } else {c2 = e.charCodeAt(n + 1); c3 = e.charCodeAt(n + 2); t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63); n += 3 } } return t } }
 exports = module.exports = NodeDetails;
+
+ndlog = bows('Node Details');
 
 function NodeDetails(peer, peerId, n_fingers) {
         var self = this;
@@ -34,49 +38,86 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
         // self.join = function(destPeerId){}
-        self.msgToSelf = function(srcPeerId, msgId, type, data, path, func){
+        self.msgToSelf = function(srcPeerId, msgId, type, data, path, func, signal){
+                signal = (typeof signal !== 'undefined') ? signal : null;
+
                 peer.channelManager.messageHandler({
                         srcPeerId: srcPeerId,
                         msgId: msgId,
                         path: path,
                         type: type,
                         data: data,
-                        func: func
+                        func: func,
+                        signal: signal
                 });
         }
 
-        self.findSuccessor = function(destPeerId, id, path, msgId, func){
-                console.log("FIND SUCCESSOR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        self.findSuccessor = function(destPeerId, id, path, msgId, func, signal){
+                ndlog("FIND SUCCESSOR(" + destPeerId +", "+ id +", "+ path +", "+ msgId +", "+ func +", "+ "signal"+ ")");
                 if(destPeerId == self.peerId){
-                        if(self.peerId == self.successor)
-                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func);
+                        if(self.peerId == self.successor){
+                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func, null);
+                        }
                         
-                        else if(isBetween(id, self.peerId, self.successor) || id == self.successor)
-                                self.msgToSelf(self.peerId, msgId, "response", self.successor, path, func);
+                        else if(isBetween(id, self.peerId, self.successor) || id == self.successor){
+                                var channel = self.connectorTable[self.successor];
+                                path += ","+ self.peerId;
+                                ndlog("sending to "+ self.successor);
+                                ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "signal-accept", data: "", func: func, signal: signal });
+
+                                channel.send({
+                                        srcPeerId: self.peerId,
+                                        msgId: msgId,
+                                        path: path,
+                                        type: "signal-accept",
+                                        data: "",
+                                        func: func,
+                                        signal: signal
+                                });
+                                // self.msgToSelf(self.peerId, msgId, "response", self.successor, path, func, signal);
+                        }
                         
                         else{
                                 var node = self.closestPrecedingFinger(id);
                                 if( node == self.peerId )
-                                        self.findSuccessor(self.successor, id, path, msgId, func); //O(n)
+                                        self.findSuccessor(self.successor, id, path, msgId, func, signal); //O(n)
                                 else
-                                        self.findSuccessor(node, id, path, msgId, func);           //O(log(n))
+                                        self.findSuccessor(node, id, path, msgId, func, signal);           //O(log(n))
                         }
                 }
 
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
+                        if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
+                        ndlog("sending to "+ destPeerId);
+                        ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "request", data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\",\'"+ signal+"\')", func: func, signal: signal });
                         channel.send({
                                 srcPeerId: self.peerId,
                                 msgId: msgId,
                                 path: path,
                                 type: "request",
-                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
-                                func: func
+                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\",\'"+ signal+"\')",
+                                func: func,
+                                signal: signal
                         });
                 }
+        }
+
+        self.initFindSuccessor = function(destPeerId, id, path, msgId, func){
+                var intentId = (~~(Math.random() * 1e9)).toString(36) + Date.now();
+
+                var channel = new SimplePeer({
+                        initiator: true,
+                        trickle: false
+                });
+
+                channel.on('signal', function(signal) {
+                        signal = encodeSignal(signal);
+                        self.findSuccessor(destPeerId, id, path, msgId, func, signal);
+                });
+
         }
 
         self.findPredOfSucc = function(destPeerId, path, msgId, func){
@@ -84,7 +125,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                         self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func);
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
+                        if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -99,15 +140,19 @@ function NodeDetails(peer, peerId, n_fingers) {
 
         }
 
+        self.initFindPredOfSucc = function(destPeerId, path, msgId, func){
+
+        }
+
         self.notifyPredecessor = function(destPeerId, data, path, msgId, func){
                 if( destPeerId == self.peerId){
-                        console.log("Hello");
+                        ndlog("Hello");
                         self.predecessor = data;
                         self.msgToSelf(self.peerId, msgId, "response", null, path, func);
                 }
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
+                        if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -138,7 +183,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                 
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        console.log("Connector: "+ channel);
+                        ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -167,5 +212,8 @@ function NodeDetails(peer, peerId, n_fingers) {
                 if (fromKey > toKey) return (peerId > fromKey || peerId < toKey);
                 else return (peerId > fromKey && peerId < toKey);
         }
+
+        function encodeSignal(signal){return Base64.encode(JSON.stringify(signal)); }
+        function decodeSignal(signal){return JSON.parse( (Base64.decode(signal)).replace("\n", "\\r\\n") ); }
 
 }

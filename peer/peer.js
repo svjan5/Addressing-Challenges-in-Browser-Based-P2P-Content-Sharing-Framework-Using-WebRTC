@@ -4,7 +4,7 @@ var bows = require('bows');
 var NodeDetails = require('./node-details.js');
 var ChannelManager = require('./channel-manager.js');
 
-log = bows('DTRM');
+log = bows('Bootstrp Server');
 
 exports = module.exports = Peer;
 

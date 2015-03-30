@@ -22,6 +22,10 @@ setTimeout(function () {
 },{"./peer/peer.js":68}],2:[function(require,module,exports){
 var SimplePeer = require('simple-peer');
 var Id = require('dht-id');
+var bows = require('bows');
+var Base64 = {_keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function(e) {var t = ""; var n, r, i, s, o, u, a; var f = 0; e = Base64._utf8_encode(e); while (f < e.length) {n = e.charCodeAt(f++); r = e.charCodeAt(f++); i = e.charCodeAt(f++); s = n >> 2; o = (n & 3) << 4 | r >> 4; u = (r & 15) << 2 | i >> 6; a = i & 63; if (isNaN(r)) {u = a = 64 } else if (isNaN(i)) {a = 64 } t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a) } return t }, decode: function(e) {var t = ""; var n, r, i; var s, o, u, a; var f = 0; e = e.replace(/[^A-Za-z0-9\+\/\=]/g, ""); while (f < e.length) {s = this._keyStr.indexOf(e.charAt(f++)); o = this._keyStr.indexOf(e.charAt(f++)); u = this._keyStr.indexOf(e.charAt(f++)); a = this._keyStr.indexOf(e.charAt(f++)); n = s << 2 | o >> 4; r = (o & 15) << 4 | u >> 2; i = (u & 3) << 6 | a; t = t + String.fromCharCode(n); if (u != 64) {t = t + String.fromCharCode(r) } if (a != 64) {t = t + String.fromCharCode(i) } } t = Base64._utf8_decode(t); return t }, _utf8_encode: function(e) {e = e.replace(/\r\n/g, "\n"); var t = ""; for (var n = 0; n < e.length; n++) {var r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r) } else if (r > 127 && r < 2048) {t += String.fromCharCode(r >> 6 | 192); t += String.fromCharCode(r & 63 | 128) } else {t += String.fromCharCode(r >> 12 | 224); t += String.fromCharCode(r >> 6 & 63 | 128); t += String.fromCharCode(r & 63 | 128) } } return t }, _utf8_decode: function(e) {var t = ""; var n = 0; var r = c1 = c2 = 0; while (n < e.length) {r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r); n++ } else if (r > 191 && r < 224) {c2 = e.charCodeAt(n + 1); t += String.fromCharCode((r & 31) << 6 | c2 & 63); n += 2 } else {c2 = e.charCodeAt(n + 1); c3 = e.charCodeAt(n + 2); t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63); n += 3 } } return t } }
+
+cmlog = bows('Channel Manager');
 
 exports = module.exports = ChannelManager;
 
@@ -32,7 +36,7 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
 
         // Establish a connection to another peer
         self.connect = function(destPeerId) {
-                log('connecting to: ', destPeerId);
+                cmlog('connecting to: ', destPeerId);
 
                 var intentId = (~~(Math.random() * 1e9)).toString(36) + Date.now();
 
@@ -42,7 +46,8 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                 });
 
                 channel.on('signal', function(signal) {
-                        log("Peer1 : Signal generated "); //+ "intentId:"+ intentId + "  srcPeerId:" + peerId + " destPeerId:" + destPeerId );
+                        cmlog("Peer1 : Signal generated "); //+ "intentId:"+ intentId + "  srcPeerId:" + peerId + " destPeerId:" + destPeerId );
+                        // signal = JSON.parse(JSON.stringify(signal));
 
                         bootConn.emit('b-forward-offer', {
                                 offer: {
@@ -57,15 +62,15 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                 bootConn.on('p-forward-reply', function(replyData) {
                         // Error handling
                         if (replyData.offer.intentId !== intentId) {
-                                log('Peer1: not right intentId: ', replyData.offer.intentId, intentId);
+                                cmlog('Peer1: not right intentId: ', replyData.offer.intentId, intentId);
                                 return;
                         }
 
-                        log('Peer1: offerAccepted');
+                        cmlog('Peer1: offerAccepted');
 
                         // to form direct connection between peers
                         channel.on('ready', function() {
-                                log('Peer1 : channel ready to send');
+                                cmlog('Peer1 : channel ready to send');
 
                                 nodeDetails.bootPeer.peerId = replyData.offer.destPeerId;
                                 nodeDetails.bootPeer.connector = channel;
@@ -102,18 +107,17 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 var msgId = new Id().toDec();
                                 nodeDetails.responseTable[msgId] = null;
 
-                                nodeDetails.findSuccessor(
+                                nodeDetails.initFindSuccessor(
                                         nodeDetails.bootPeer.peerId,
                                         nodeDetails.peerId,
                                         "",
                                         msgId,
                                         "self.joinNetwork(1," + msgId + ")"
-
                                 );
                                 break;
 
                         case 1:
-                                console.log("Join Network case 0 successful");
+                                cmlog("Join Network case 0 successful");
                                 nodeDetails.successor = nodeDetails.responseTable[data];
                                 delete nodeDetails.responseTable[msgId];
                                 isStabilize = false;
@@ -121,8 +125,8 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "stabilize":
 
                                 if(isStabilize) {
-                                        console.log("Stabilize got data:");
-                                        console.log(data);
+                                        cmlog("Stabilize got data:");
+                                        cmlog(data);
                                         stabilizeData = data;
                                 }
 
@@ -139,23 +143,20 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case 2:
-                                console.log("Join Network case 1 successful - value:"+ nodeDetails.responseTable[data]);
+                                cmlog("Join Network case 1 successful - value:"+ nodeDetails.responseTable[data]);
                                 nodeDetails.succPreceding = nodeDetails.responseTable[data];
                                 delete nodeDetails.responseTable[msgId];
 
                                 if(nodeDetails.succPreceding != null){
                                         var key = nodeDetails.succPreceding;
                                         if ((nodeDetails.peerId == nodeDetails.successor) || isBetween(key, nodeDetails.peerId, nodeDetails.successor)) {
-                                                console.log("HelloInside");
                                                 nodeDetails.successor = nodeDetails.succPreceding;
                                         }
                                 }
-                                console.log("Hello");
                                 var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" 
                                                           : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId  + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
 
                                 isStabilize = true;
-                                console.log("Hello2");
                                 var msgId = new Id().toDec();                                
                                 nodeDetails.notifyPredecessor(
                                         nodeDetails.successor,
@@ -164,11 +165,10 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         msgId,
                                         func
                                 );
-                                console.log("Hello3");
                                 break;
 
                         case 3:
-                                console.log("Join Network case 2 successful");
+                                cmlog("Join Network case 2 successful");
                                 var msgId = new Id().toDec(); 
 
                                 var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor 
@@ -182,20 +182,20 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case 4:
-                                console.log("Join Network case 3 successful : "+ data);
+                                cmlog("Join Network case 3 successful : "+ data);
                                 break;
 
                 }
         }
 
         bootConn.on('p-forward-offer', function(fwddData) {
-                console.log("Peer2: signal received");
+                cmlog("Peer2: signal received");
                 var channel = new SimplePeer({
                         trickle: false
                 });
 
                 channel.on('ready', function() {
-                        log('Peer2 : ready to listen');
+                        cmlog('Peer2 : ready to listen');
 
                         channel.on('message', self.messageHandler);
                         nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
@@ -206,11 +206,11 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 type: "chat-init",
                                 data: "how are you?"
                         });
-                        self.joinNetwork(0, null);
+                        // self.joinNetwork(0, null);
                 });
 
                 channel.on('signal', function(signal) {
-                        log('Peer2 : sending back my signal data');
+                        cmlog('Peer2 : sending back my signal data');
                         fwddData.offer.signal = signal;
                         bootConn.emit('b-forward-reply', fwddData);
                 });
@@ -218,13 +218,15 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 channel.signal(fwddData.offer.signal);
 
         });
+        
+
 
         self.messageHandler = function(message){
                 var channel = nodeDetails.connectorTable[message.srcPeerId];
                 switch(message.type){
 
                         case "chat-init":
-                                console.log(message);
+                                cmlog(message);
                                 channel.send({
                                         srcPeerId: peerId,
                                         type: "chat-ack",
@@ -233,46 +235,94 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case "chat-ack":
-                                console.log(message);
+                                cmlog(message);
                                 break;
 
-
                         case "request":
-                                console.log("Request Received");
-                                console.log(message);
-                                console.log("Executing :"+ message.data);
+                                cmlog("Request Received");
+                                cmlog(message);
+                                cmlog("Executing :"+ message.data);
                                 var data = eval(message.data);
                                 break;
 
                         case "response":
-                                console.log("In response");
-                                console.log(message);
+                                cmlog("In response");
+                                cmlog(message);
                                 var path = message.path.split(",");
 
                                 if (path.length == 1){
+                                        cmlog("Message for self");
+                                        var conId = parseInt(message.data);
                                         nodeDetails.responseTable[message.msgId] = message.data;
-                                        console.log("Executing :"+message.func);
-                                        eval(message.func);
+
+                                        // cmlog(message.signal);
+
+                                        if( (typeof nodeDetails.connectorTable[conId] === 'undefined') && (message.signal != null) ){
+                                                cmlog("Form connection with "+conId);
+                                                channel.on('ready', function() {
+                                                        cmlog('Connected to ' + conId);
+                                                        nodeDetails.connectorTable[conId] = channel;
+                                                        eval(message.func);
+                                                        channel.on('message', self.messageHandler);
+                                                });
+                                                channel.signal(decodeSignal(message.signal));
+                                        }
+                                        else{
+                                                cmlog("Connection already exists with "+conId);
+                                                cmlog("Executing :"+message.func);
+                                                eval(message.func);
+                                        }
                                 }
                                 else{
-                                        console.log("Forward");
                                         var returnPeerId = parseInt(path.pop(),10);
+                                        cmlog("Forward to " + returnPeerId);
                                         message.path = path.join();
-                                        var channel = nodeDetails.connectorTable[returnPeerId];
+                                        channel = nodeDetails.connectorTable[returnPeerId];
                                         channel.send(message);
                                 }
                                 break;
 
-                        case "make-connection":
+                        case "signal-accept":
+                                cmlog(message);
+                                channel = new SimplePeer({
+                                        trickle: false
+                                });
 
+                                channel.on('signal', function(signal) {
+                                        cmlog('signal-accept: signal -- Peer2 : sending back my signal data');
+                                        message.signal = encodeSignal(signal);
+                                        cmlog("After : " + message.signal);
+                                        cmlog(signal);
+                                        message.data = nodeDetails.peerId;
+                                        nodeDetails.msgToSelf(message.srcPeerId, message.msgId, "response", message.data, message.path, message.func, message.signal);
+                                });
+
+                                channel.on('ready', function() {
+                                        cmlog("signal-accept :ready")
+                                        channel.on('message', self.messageHandler);
+                                        nodeDetails.connectorTable[message.srcPeerId] = channel;
+                                        cmlog("Connected to "+message.srcPeerId);
+                                });
+
+                                cmlog("Before : " + message.signal);
+                                cmlog(decodeSignal(message.signal));
+                                channel.signal(decodeSignal(message.signal));
                                 break;
                 }
         }
-}
-},{"dht-id":7,"simple-peer":9}],3:[function(require,module,exports){
-var Id = require('dht-id');
 
+        function encodeSignal(signal){return Base64.encode(JSON.stringify(signal)); }
+        function decodeSignal(signal){return JSON.parse( Base64.decode(signal).replace("\n", "\\r\\n") ); }
+}
+
+},{"bows":4,"dht-id":7,"simple-peer":9}],3:[function(require,module,exports){
+var Id = require('dht-id');
+var SimplePeer = require('simple-peer');
+var bows = require('bows');
+var Base64 = {_keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function(e) {var t = ""; var n, r, i, s, o, u, a; var f = 0; e = Base64._utf8_encode(e); while (f < e.length) {n = e.charCodeAt(f++); r = e.charCodeAt(f++); i = e.charCodeAt(f++); s = n >> 2; o = (n & 3) << 4 | r >> 4; u = (r & 15) << 2 | i >> 6; a = i & 63; if (isNaN(r)) {u = a = 64 } else if (isNaN(i)) {a = 64 } t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a) } return t }, decode: function(e) {var t = ""; var n, r, i; var s, o, u, a; var f = 0; e = e.replace(/[^A-Za-z0-9\+\/\=]/g, ""); while (f < e.length) {s = this._keyStr.indexOf(e.charAt(f++)); o = this._keyStr.indexOf(e.charAt(f++)); u = this._keyStr.indexOf(e.charAt(f++)); a = this._keyStr.indexOf(e.charAt(f++)); n = s << 2 | o >> 4; r = (o & 15) << 4 | u >> 2; i = (u & 3) << 6 | a; t = t + String.fromCharCode(n); if (u != 64) {t = t + String.fromCharCode(r) } if (a != 64) {t = t + String.fromCharCode(i) } } t = Base64._utf8_decode(t); return t }, _utf8_encode: function(e) {e = e.replace(/\r\n/g, "\n"); var t = ""; for (var n = 0; n < e.length; n++) {var r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r) } else if (r > 127 && r < 2048) {t += String.fromCharCode(r >> 6 | 192); t += String.fromCharCode(r & 63 | 128) } else {t += String.fromCharCode(r >> 12 | 224); t += String.fromCharCode(r >> 6 & 63 | 128); t += String.fromCharCode(r & 63 | 128) } } return t }, _utf8_decode: function(e) {var t = ""; var n = 0; var r = c1 = c2 = 0; while (n < e.length) {r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r); n++ } else if (r > 191 && r < 224) {c2 = e.charCodeAt(n + 1); t += String.fromCharCode((r & 31) << 6 | c2 & 63); n += 2 } else {c2 = e.charCodeAt(n + 1); c3 = e.charCodeAt(n + 2); t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63); n += 3 } } return t } }
 exports = module.exports = NodeDetails;
+
+ndlog = bows('Node Details');
 
 function NodeDetails(peer, peerId, n_fingers) {
         var self = this;
@@ -306,49 +356,86 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
 
         // self.join = function(destPeerId){}
-        self.msgToSelf = function(srcPeerId, msgId, type, data, path, func){
+        self.msgToSelf = function(srcPeerId, msgId, type, data, path, func, signal){
+                signal = (typeof signal !== 'undefined') ? signal : null;
+
                 peer.channelManager.messageHandler({
                         srcPeerId: srcPeerId,
                         msgId: msgId,
                         path: path,
                         type: type,
                         data: data,
-                        func: func
+                        func: func,
+                        signal: signal
                 });
         }
 
-        self.findSuccessor = function(destPeerId, id, path, msgId, func){
-                console.log("FIND SUCCESSOR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        self.findSuccessor = function(destPeerId, id, path, msgId, func, signal){
+                ndlog("FIND SUCCESSOR(" + destPeerId +", "+ id +", "+ path +", "+ msgId +", "+ func +", "+ "signal"+ ")");
                 if(destPeerId == self.peerId){
-                        if(self.peerId == self.successor)
-                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func);
+                        if(self.peerId == self.successor){
+                                self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func, null);
+                        }
                         
-                        else if(isBetween(id, self.peerId, self.successor) || id == self.successor)
-                                self.msgToSelf(self.peerId, msgId, "response", self.successor, path, func);
+                        else if(isBetween(id, self.peerId, self.successor) || id == self.successor){
+                                var channel = self.connectorTable[self.successor];
+                                path += ","+ self.peerId;
+                                ndlog("sending to "+ self.successor);
+                                ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "signal-accept", data: "", func: func, signal: signal });
+
+                                channel.send({
+                                        srcPeerId: self.peerId,
+                                        msgId: msgId,
+                                        path: path,
+                                        type: "signal-accept",
+                                        data: "",
+                                        func: func,
+                                        signal: signal
+                                });
+                                // self.msgToSelf(self.peerId, msgId, "response", self.successor, path, func, signal);
+                        }
                         
                         else{
                                 var node = self.closestPrecedingFinger(id);
                                 if( node == self.peerId )
-                                        self.findSuccessor(self.successor, id, path, msgId, func); //O(n)
+                                        self.findSuccessor(self.successor, id, path, msgId, func, signal); //O(n)
                                 else
-                                        self.findSuccessor(node, id, path, msgId, func);           //O(log(n))
+                                        self.findSuccessor(node, id, path, msgId, func, signal);           //O(log(n))
                         }
                 }
 
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
+                        if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
+                        ndlog("sending to "+ destPeerId);
+                        ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "request", data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\",\'"+ signal+"\')", func: func, signal: signal });
                         channel.send({
                                 srcPeerId: self.peerId,
                                 msgId: msgId,
                                 path: path,
                                 type: "request",
-                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
-                                func: func
+                                data: "nodeDetails.findSuccessor(" + destPeerId + "," + id + ",\"" + path + "\"," + msgId + ",\"" + func + "\",\'"+ signal+"\')",
+                                func: func,
+                                signal: signal
                         });
                 }
+        }
+
+        self.initFindSuccessor = function(destPeerId, id, path, msgId, func){
+                var intentId = (~~(Math.random() * 1e9)).toString(36) + Date.now();
+
+                var channel = new SimplePeer({
+                        initiator: true,
+                        trickle: false
+                });
+
+                channel.on('signal', function(signal) {
+                        signal = encodeSignal(signal);
+                        self.findSuccessor(destPeerId, id, path, msgId, func, signal);
+                });
+
         }
 
         self.findPredOfSucc = function(destPeerId, path, msgId, func){
@@ -356,7 +443,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                         self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func);
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
+                        if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -371,15 +458,19 @@ function NodeDetails(peer, peerId, n_fingers) {
 
         }
 
+        self.initFindPredOfSucc = function(destPeerId, path, msgId, func){
+
+        }
+
         self.notifyPredecessor = function(destPeerId, data, path, msgId, func){
                 if( destPeerId == self.peerId){
-                        console.log("Hello");
+                        ndlog("Hello");
                         self.predecessor = data;
                         self.msgToSelf(self.peerId, msgId, "response", null, path, func);
                 }
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        if(channel == null || channel == undefined) console.log("Connector: "+ channel);
+                        if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -410,7 +501,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                 
                 else{
                         var channel = self.connectorTable[destPeerId];
-                        console.log("Connector: "+ channel);
+                        ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
                         channel.send({
@@ -440,8 +531,11 @@ function NodeDetails(peer, peerId, n_fingers) {
                 else return (peerId > fromKey && peerId < toKey);
         }
 
+        function encodeSignal(signal){return Base64.encode(JSON.stringify(signal)); }
+        function decodeSignal(signal){return JSON.parse( (Base64.decode(signal)).replace("\n", "\\r\\n") ); }
+
 }
-},{"dht-id":7}],4:[function(require,module,exports){
+},{"bows":4,"dht-id":7,"simple-peer":9}],4:[function(require,module,exports){
 (function() {
   function checkColorSupport() {
     var chrome = !!window.chrome,
@@ -9076,7 +9170,7 @@ var bows = require('bows');
 var NodeDetails = require('./node-details.js');
 var ChannelManager = require('./channel-manager.js');
 
-log = bows('DTRM');
+log = bows('Bootstrp Server');
 
 exports = module.exports = Peer;
 
