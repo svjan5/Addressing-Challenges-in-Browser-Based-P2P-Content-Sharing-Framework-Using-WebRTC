@@ -79,7 +79,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                         case 0:
                                 /*Join function*/
-
                                 nodeDetails.predecessor = null;
                                 /*bootPeer.findSucessor(self.peerId)*/
                                 var msgId = new Id().toDec();
@@ -95,8 +94,8 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case 1:
-                                cmlog("Join Network case 0 successful");
                                 nodeDetails.successor = nodeDetails.responseTable[data];
+                                cmlog("Join Network case 0 successful--  Node successor: "+ nodeDetails.successor);
                                 delete nodeDetails.responseTable[msgId];
                                 isStabilize = false;
 
@@ -111,17 +110,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 var msgId = new Id().toDec();
                                 nodeDetails.responseTable[msgId] = null;
 
-                                nodeDetails.findPredOfSucc(
+                                nodeDetails.initFindPredOfSucc(
                                         nodeDetails.successor,
                                         "",
                                         msgId,
                                         "self.joinNetwork(2," + msgId + ")"
                                 );
-
                                 break;
 
                         case 2:
-                                cmlog("Join Network case 1 successful - value:"+ nodeDetails.responseTable[data]);
+                                cmlog("Join Network case 1 successful - Predecessor of successor:"+ nodeDetails.responseTable[data]);
                                 nodeDetails.succPreceding = nodeDetails.responseTable[data];
                                 delete nodeDetails.responseTable[msgId];
 
@@ -158,11 +156,9 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         "self.joinNetwork(4," + msgId + ")"
                                 );
                                 break;
-
                         case 4:
                                 cmlog("Join Network case 3 successful : "+ data);
                                 break;
-
                 }
         }
 
@@ -299,6 +295,11 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 }
         }
 
+        /* peerId <belongs to> (fromKey,toKey) exclusive*/
+        function isBetween(peerId, fromKey, toKey) {
+                if (fromKey > toKey) return (peerId > fromKey || peerId < toKey);
+                else return (peerId > fromKey && peerId < toKey);
+        }
         function encodeSignal(signal){return Base64.encode(JSON.stringify(signal)); }
         function decodeSignal(signal){return JSON.parse( Base64.decode(signal).replace("\n", "\\r\\n") ); }
 }

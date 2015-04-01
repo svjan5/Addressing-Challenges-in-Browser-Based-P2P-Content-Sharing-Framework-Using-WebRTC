@@ -119,34 +119,70 @@ function NodeDetails(peer, peerId, n_fingers) {
                         signal = encodeSignal(signal);
                         self.findSuccessor(destPeerId, id, path, msgId, func, signal);
                 });
-
         }
 
-        self.findPredOfSucc = function(destPeerId, path, msgId, func){
-                if( destPeerId == self.peerId) 
-                        self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func);
+        self.initFindPredOfSucc = function(destPeerId, path, msgId, func){
+                var signalId = new Id().toDec();
+
+                self.channelTable[signalId] = new SimplePeer({
+                        initiator: true,
+                        trickle: false
+                });
+
+                self.channelTable[signalId].on('signal', function(signal) {
+                        signal.id = signalId;
+                        signal = encodeSignal(signal);
+                        self.findPredOfSucc(destPeerId, path, msgId, func, signal);
+                });
+        }
+
+        self.findPredOfSucc = function(destPeerId, path, msgId, func, signal){
+                ndlog("FIND PREDOFSUCC(" + destPeerId +", "+ path +", "+ msgId +", "+ func +", signal)");
+                if( destPeerId == self.peerId) {
+                        if(self.peerId == self.successor){
+                                self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func, null);
+                        }
+                        // self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func, signal);
+                        else {
+                                var channel = self.connectorTable[self.predecessor];
+                                path += "," + self.peerId;
+                                ndlog("sending to " + self.successor);
+                                ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "signal-accept", data: "", func: func, signal: signal });
+
+                                channel.send({
+                                        srcPeerId: self.peerId,
+                                        msgId: msgId,
+                                        path: path,
+                                        type: "signal-accept",
+                                        data: "",
+                                        func: func,
+                                        signal: signal
+                                });
+                        }
+                }
                 else{
                         var channel = self.connectorTable[destPeerId];
                         if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
+                        ndlog("sending to "+ destPeerId);
+                        ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "request", data: "nodeDetails.findPredOfSucc(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func+ "\",\'"+ signal+"\')", func: func, signal: signal });
                         channel.send({
                                 srcPeerId: self.peerId,
                                 msgId: msgId,
                                 path: path,
                                 type: "request",
-                                data: "nodeDetails.findPredOfSucc(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )",
-                                func: func
+                                data: "nodeDetails.findPredOfSucc(" + destPeerId + ",\"" + path + "\"," + msgId + ",\"" + func + "\",\'"+ signal+"\')",
+                                func: func,
+                                signal: signal
                         });
                 }
 
         }
 
-        self.initFindPredOfSucc = function(destPeerId, path, msgId, func){
-
-        }
-
         self.notifyPredecessor = function(destPeerId, data, path, msgId, func){
+                ndlog("NOTIFY PREDECESSOR(" + destPeerId +", "+ data + ", "+ path +", "+ msgId +", "+ func +")");
+
                 if( destPeerId == self.peerId){
                         ndlog("Hello");
                         self.predecessor = data;
@@ -157,6 +193,8 @@ function NodeDetails(peer, peerId, n_fingers) {
                         if(channel == null || channel == undefined) ndlog("Connector: "+ channel);
                         path += ","+ self.peerId;
 
+                        ndlog("sending to "+ destPeerId);
+                        ndlog({srcPeerId: self.peerId, msgId: msgId, path: path, type: "request", data: "nodeDetails.notifyPredecessor(" + destPeerId + "," + data + ",\"" + path + "\"," + msgId + ",\"" + func + "\" )", func: func });
                         channel.send({
                                 srcPeerId: self.peerId,
                                 msgId: msgId,
@@ -170,6 +208,7 @@ function NodeDetails(peer, peerId, n_fingers) {
         }
          //"nodeDetails.stabilize(52,",45",38326717949206,"self.joinNetwork(4,38326717949206)" )"
         self.stabilize = function(destPeerId, path, msgId, func){
+                ndlog("STABILIZE(" + destPeerId +", "+  path +", "+ msgId +", "+ func +")");
                 if( destPeerId == self.peerId){
                         var data = {
                                 srcPeerId: self.peerId,
