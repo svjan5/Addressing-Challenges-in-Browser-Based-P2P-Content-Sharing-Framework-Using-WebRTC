@@ -56,9 +56,8 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.findSuccessor = function(destPeerId, id, path, msgId, func, signal){
                 ndlog("FIND SUCCESSOR(" + destPeerId +", "+ id +", "+ path +", "+ msgId +", "+ func +", "+ "signal"+ ")");
                 if(destPeerId == self.peerId){
-                        if(self.peerId == self.successor){
+                        if(self.peerId == self.successor)
                                 self.msgToSelf(self.peerId, msgId, "response", self.peerId, path, func, null);
-                        }
                         
                         else if(isBetween(id, self.peerId, self.successor) || id == self.successor){
                                 var channel = self.connectorTable[self.successor];
@@ -139,10 +138,9 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.findPredOfSucc = function(destPeerId, path, msgId, func, signal){
                 ndlog("FIND PREDOFSUCC(" + destPeerId +", "+ path +", "+ msgId +", "+ func +", signal)");
                 if( destPeerId == self.peerId) {
-                        if(self.peerId == self.successor){
+                        if(self.peerId == self.successor)
                                 self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func, null);
-                        }
-                        // self.msgToSelf(self.peerId, msgId, "response", self.predecessor, path, func, signal);
+
                         else {
                                 var channel = self.connectorTable[self.predecessor];
                                 path += "," + self.peerId;
@@ -237,6 +235,22 @@ function NodeDetails(peer, peerId, n_fingers) {
                         });
                 }
 
+        }
+
+        self.fixFingers = function(){
+                ndlog("CALLED FIX FINGERS");
+                for (var i = 0; i < self.fingerTable.length; i++) {
+                        var key = self.fingerTable[i].start;
+                        var msgId = new Id().toDec();
+                        self.responseTable[msgId] = null;
+                        self.initFindSuccessor(
+                                self.peerId,
+                                key,
+                                "",
+                                msgId,
+                                "nodeDetails.fingerTable["+i+"].fingerId = " + "message.data;"
+                        );
+                };
         }
 
         self.closestPrecedingFinger = function(id){

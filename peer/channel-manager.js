@@ -55,8 +55,8 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 nodeDetails.connectorTable[replyData.offer.destPeerId] = channel;
 
                                 channel.on('message', self.messageHandler);
-                                // node.
-                                // self.joinNetwork();
+                                log("JOINING CHORD");
+                                self.joinNetwork(0, 1);
                         });
 
                         channel.signal(replyData.offer.signal);
@@ -157,9 +157,26 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 );
                                 break;
                         case 4:
-                                cmlog("Join Network case 3 successful : "+ data);
+                                cmlog("JOIN NETWORK COMPLETED: "+ data);
                                 break;
                 }
+        }
+
+        self.listPeers = function(){
+                var channel = nodeDetails.connectorTable[nodeDetails.successor];
+
+                channel.send({
+                        srcPeerId: nodeDetails.peerId,
+                        data: nodeDetails.peerId,
+                        type: "listPeers"
+                });
+
+                cmlog(channel);
+                cmlog({
+                        srcPeerId: nodeDetails.peerId,
+                        data: nodeDetails.peerId,
+                        type: "listPeers"
+                });
         }
 
         bootConn.on('p-forward-offer', function(fwddData) {
@@ -291,6 +308,21 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                 // cmlog("Before : " + message.signal);
                                 nodeDetails.channelTable[decSig.id].signal(decSig);
+                                break;
+
+                        case "listPeers":
+                                cmlog(message);
+                                /*Get list*/
+                                if(message.srcPeerId == nodeDetails.peerId){
+                                        cmlog("LIST OF PEERS IN NETWORK" + message.data);
+                                }
+                                /*forward*/
+                                else{
+                                        var channel = nodeDetails.connectorTable[nodeDetails.successor];
+                                        message.data += ", " + nodeDetails.peerId;
+                                        cmlog("Forward" +message);
+                                        channel.send(message);
+                                }
                                 break;
                 }
         }
