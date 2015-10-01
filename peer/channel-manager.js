@@ -250,7 +250,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                         if( (typeof nodeDetails.connectorTable[conId] === 'undefined') && (message.signal != null) ){
                                                 cmlog("Form connection with "+conId);
-                                                decSig = decodeSignal(message.signal);
+                                                decSig = self.decodeSignal(message.signal);
 
                                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
                                                         cmlog('Connected to ' + conId);
@@ -276,9 +276,13 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 }
                                 break;
 
+
                         case "signal-accept":
+                                cmlog("In signal-accept:")
                                 cmlog(message);
-                                decSig = decodeSignal(message.signal);
+                                decSig = self.decodeSignal(message.signal);
+
+                                cmlog("decSig:"); cmlog(decSig);
 
                                 nodeDetails.channelTable[decSig.id] = new SimplePeer({
                                         trickle: false
@@ -289,7 +293,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                         message.signal = signal;
                                         message.signal.id = decSig.id;
-                                        message.signal = encodeSignal(message.signal);
+                                        message.signal = self.encodeSignal(message.signal);
 
                                         // cmlog("After : " + message.signal);
 
@@ -332,6 +336,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 if (fromKey > toKey) return (peerId > fromKey || peerId < toKey);
                 else return (peerId > fromKey && peerId < toKey);
         }
-        function encodeSignal(signal){return Base64.encode(JSON.stringify(signal)); }
-        function decodeSignal(signal){return JSON.parse( Base64.decode(signal).replace("\n", "\\r\\n") ); }
+        self.encodeSignal = function(signal){
+            pack = {
+                id: signal.id,
+                sig: signal
+            };
+            return Base64.encode(JSON.stringify(pack));
+        }
+        self.decodeSignal = function (signal){
+            pack = JSON.parse( Base64.decode(signal).replace("\n", "\\r\\n") )
+            pack.sig.id = pack.id;
+            return pack.sig;
+        }
 }
