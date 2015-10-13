@@ -46,7 +46,7 @@ function started() {
         console.log('Signaling server has started on:', server.info.uri);
 }
 
-var peers = {};
+var peers = {}; 
 // id : socket
 
 // Console for server
@@ -55,7 +55,7 @@ var prompt = repl.start({
         prompt: 'server>'
 });
 prompt.context.peers = peers;
-prompt.context.listPeer = function() {return Object.keys(peers)};
+prompt.context.listPeers = function() {return Object.keys(peers)};
 
 function mainServerFunction(socket) {
 
@@ -104,8 +104,27 @@ function mainServerFunction(socket) {
 
         function peerRemove() {
                 Object.keys(peers).map(function(peerId) {
-                        if (peers[peerId].id === socket.id)
+                        if (peers[peerId].id === socket.id){
+                                var peerList = prompt.context.listPeers();
+                                var succ = ((peerList.indexOf(peerId)+1)+peerList.length)%peerList.length;
+                                var pred = ((peerList.indexOf(peerId)-1)+peerList.length)%peerList.length;
+
+                                console.log("Disconnected: "+peerId);
+
+                                console.log("Update predecessor of " + peerList[succ]+ " to --> " + peerList[pred]);
+                                peers[peerList[succ]].emit('update', {
+                                        isSucc: false,
+                                        newConn: peerList[pred]
+                                });
+
+                                console.log("Update successor of " + peerList[pred]+ " to --> " + peerList[succ]);
+                                peers[peerList[pred]].emit('update', {
+                                        isSucc: true,
+                                        newConn: peerList[succ]
+                                });
+
                                 delete peers[peerId];
+                        }
                 });
         }
 }

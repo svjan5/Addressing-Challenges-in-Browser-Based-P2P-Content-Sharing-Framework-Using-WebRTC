@@ -1,7 +1,96 @@
 var SimplePeer = require('simple-peer');
 var Id = require('dht-id');
 var bows = require('bows');
-var Base64 = {_keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", encode: function(e) {var t = ""; var n, r, i, s, o, u, a; var f = 0; e = Base64._utf8_encode(e); while (f < e.length) {n = e.charCodeAt(f++); r = e.charCodeAt(f++); i = e.charCodeAt(f++); s = n >> 2; o = (n & 3) << 4 | r >> 4; u = (r & 15) << 2 | i >> 6; a = i & 63; if (isNaN(r)) {u = a = 64 } else if (isNaN(i)) {a = 64 } t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a) } return t }, decode: function(e) {var t = ""; var n, r, i; var s, o, u, a; var f = 0; e = e.replace(/[^A-Za-z0-9\+\/\=]/g, ""); while (f < e.length) {s = this._keyStr.indexOf(e.charAt(f++)); o = this._keyStr.indexOf(e.charAt(f++)); u = this._keyStr.indexOf(e.charAt(f++)); a = this._keyStr.indexOf(e.charAt(f++)); n = s << 2 | o >> 4; r = (o & 15) << 4 | u >> 2; i = (u & 3) << 6 | a; t = t + String.fromCharCode(n); if (u != 64) {t = t + String.fromCharCode(r) } if (a != 64) {t = t + String.fromCharCode(i) } } t = Base64._utf8_decode(t); return t }, _utf8_encode: function(e) {e = e.replace(/\r\n/g, "\n"); var t = ""; for (var n = 0; n < e.length; n++) {var r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r) } else if (r > 127 && r < 2048) {t += String.fromCharCode(r >> 6 | 192); t += String.fromCharCode(r & 63 | 128) } else {t += String.fromCharCode(r >> 12 | 224); t += String.fromCharCode(r >> 6 & 63 | 128); t += String.fromCharCode(r & 63 | 128) } } return t }, _utf8_decode: function(e) {var t = ""; var n = 0; var r = c1 = c2 = 0; while (n < e.length) {r = e.charCodeAt(n); if (r < 128) {t += String.fromCharCode(r); n++ } else if (r > 191 && r < 224) {c2 = e.charCodeAt(n + 1); t += String.fromCharCode((r & 31) << 6 | c2 & 63); n += 2 } else {c2 = e.charCodeAt(n + 1); c3 = e.charCodeAt(n + 2); t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63); n += 3 } } return t } }
+var Base64 = {
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        encode: function(e) {
+                var t = "";
+                var n, r, i, s, o, u, a;
+                var f = 0;
+                e = Base64._utf8_encode(e);
+                while (f < e.length) {
+                        n = e.charCodeAt(f++);
+                        r = e.charCodeAt(f++);
+                        i = e.charCodeAt(f++);
+                        s = n >> 2;
+                        o = (n & 3) << 4 | r >> 4;
+                        u = (r & 15) << 2 | i >> 6;
+                        a = i & 63;
+                        if (isNaN(r)) {
+                                u = a = 64
+                        } else if (isNaN(i)) {
+                                a = 64
+                        }
+                        t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
+                }
+                return t
+        },
+        decode: function(e) {
+                var t = "";
+                var n, r, i;
+                var s, o, u, a;
+                var f = 0;
+                e = e.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+                while (f < e.length) {
+                        s = this._keyStr.indexOf(e.charAt(f++));
+                        o = this._keyStr.indexOf(e.charAt(f++));
+                        u = this._keyStr.indexOf(e.charAt(f++));
+                        a = this._keyStr.indexOf(e.charAt(f++));
+                        n = s << 2 | o >> 4;
+                        r = (o & 15) << 4 | u >> 2;
+                        i = (u & 3) << 6 | a;
+                        t = t + String.fromCharCode(n);
+                        if (u != 64) {
+                                t = t + String.fromCharCode(r)
+                        }
+                        if (a != 64) {
+                                t = t + String.fromCharCode(i)
+                        }
+                }
+                t = Base64._utf8_decode(t);
+                return t
+        },
+        _utf8_encode: function(e) {
+                e = e.replace(/\r\n/g, "\n");
+                var t = "";
+                for (var n = 0; n < e.length; n++) {
+                        var r = e.charCodeAt(n);
+                        if (r < 128) {
+                                t += String.fromCharCode(r)
+                        } else if (r > 127 && r < 2048) {
+                                t += String.fromCharCode(r >> 6 | 192);
+                                t += String.fromCharCode(r & 63 | 128)
+                        } else {
+                                t += String.fromCharCode(r >> 12 | 224);
+                                t += String.fromCharCode(r >> 6 & 63 | 128);
+                                t += String.fromCharCode(r & 63 | 128)
+                        }
+                }
+                return t
+        },
+        _utf8_decode: function(e) {
+                var t = "";
+                var n = 0;
+                var r = c1 = c2 = 0;
+                while (n < e.length) {
+                        r = e.charCodeAt(n);
+                        if (r < 128) {
+                                t += String.fromCharCode(r);
+                                n++
+                        } else if (r > 191 && r < 224) {
+                                c2 = e.charCodeAt(n + 1);
+                                t += String.fromCharCode((r & 31) << 6 | c2 & 63);
+                                n += 2
+                        } else {
+                                c2 = e.charCodeAt(n + 1);
+                                c3 = e.charCodeAt(n + 2);
+                                t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+                                n += 3
+                        }
+                }
+                return t
+        }
+}
 
 cmlog = bows('Channel Manager');
 
@@ -16,11 +105,21 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
         self.connect = function(destPeerId) {
                 cmlog('connecting to: ', destPeerId);
 
+                if (destPeerId == nodeDetails.peerId) {
+                        cmlog("Cannot form connection with self");
+                        return;
+                }
+
                 var intentId = (~~(Math.random() * 1e9)).toString(36) + Date.now();
 
                 var channel = new SimplePeer({
                         initiator: true,
-                        trickle: false
+                        trickle: false,
+                        config: {
+                                iceServers: [{
+                                        url: 'stun:172.50.89.94'
+                                }]
+                        }
                 });
 
                 channel.on('signal', function(signal) {
@@ -55,14 +154,34 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
                                 nodeDetails.connectorTable[replyData.offer.destPeerId] = channel;
 
                                 channel.on('message', self.messageHandler);
-                                log("JOINING CHORD");
-                                self.joinNetwork(0, 1);
+
+                                if (!nodeDetails.connected) {
+                                        nodeDetails.joinBegTime = (new Date()).getTime();
+                                        self.joinNetwork(0, 1);
+                                }
                         });
 
                         channel.signal(replyData.offer.signal);
                 });
+
+                // bootConn.on('update', function(updateData) {
+                //         if(updateData.isSucc){
+                //                 cmlog("Updating successor: "+ updateData.newConn);
+                //                 delete nodeDetails.connectorTable[nodeDetails.successor];
+                //                 nodeDetails.successor = updateData.newConn;
+                //                 if(nodeDetails.connectorTable[nodeDetails.successor] !== 'undefined')
+                //                         self.connect(nodeDetails.successor);
+                //         }
+                //         else{
+                //                 cmlog("Updating predecessor: "+ updateData.newConn);
+                //                 delete nodeDetails.connectorTable[nodeDetails.predecessor];
+                //                 nodeDetails.predecessor = updateData.newConn;
+                //                 // if(nodeDetails.connectorTable[nodeDetails.predecessor] !== 'undefined')
+                //                 //         self.connect(nodeDetails.predecessor);
+                //         }
+                // });
         };
-/*
+        /*
 for (var i = 0; i < chord.nodeList.length; i++) {
 
         0 -> if(i == 0) continue;                            //0
@@ -78,6 +197,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 switch (state) {
 
                         case 0:
+                                log("JOINING CHORD");
                                 /*Join function*/
                                 nodeDetails.predecessor = null;
                                 /*bootPeer.findSucessor(self.peerId)*/
@@ -95,13 +215,13 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                         case 1:
                                 nodeDetails.successor = nodeDetails.responseTable[data];
-                                cmlog("Join Network case 0 successful--  Node successor: "+ nodeDetails.successor);
+                                cmlog("Join Network case 0 successful--  Node successor: " + nodeDetails.successor);
                                 delete nodeDetails.responseTable[msgId];
                                 isStabilize = false;
 
                         case "stabilize":
 
-                                if(isStabilize) {
+                                if (isStabilize) {
                                         cmlog("Stabilize got data:");
                                         cmlog(data);
                                         stabilizeData = data;
@@ -119,21 +239,20 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 break;
 
                         case 2:
-                                cmlog("Join Network case 1 successful - Predecessor of successor:"+ nodeDetails.responseTable[data]);
+                                cmlog("Join Network case 1 successful - Predecessor of successor:" + nodeDetails.responseTable[data]);
                                 nodeDetails.succPreceding = nodeDetails.responseTable[data];
                                 delete nodeDetails.responseTable[msgId];
 
-                                if(nodeDetails.succPreceding != null){
+                                if (nodeDetails.succPreceding != null) {
                                         var key = nodeDetails.succPreceding;
                                         if ((nodeDetails.peerId == nodeDetails.successor) || isBetween(key, nodeDetails.peerId, nodeDetails.successor)) {
                                                 nodeDetails.successor = nodeDetails.succPreceding;
                                         }
                                 }
-                                var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" 
-                                                          : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId  + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
+                                var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
 
                                 isStabilize = true;
-                                var msgId = new Id().toDec();                                
+                                var msgId = new Id().toDec();
                                 nodeDetails.notifyPredecessor(
                                         nodeDetails.successor,
                                         nodeDetails.peerId,
@@ -145,10 +264,9 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                         case 3:
                                 cmlog("Join Network case 2 successful");
-                                var msgId = new Id().toDec(); 
+                                var msgId = new Id().toDec();
 
-                                var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor 
-                                                                                          : nodeDetails.succPreceding;
+                                var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor : nodeDetails.succPreceding;
                                 nodeDetails.stabilize(
                                         callStabilizeOn,
                                         "",
@@ -157,14 +275,21 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 );
                                 break;
                         case 4:
-                                cmlog("JOIN NETWORK COMPLETED: "+ data);
+                                cmlog("JOIN NETWORK COMPLETED: \n Successor: " + nodeDetails.successor + "\tPredecessor: " + nodeDetails.predecessor);
+                                nodeDetails.connected = true;
+                                console.profileEnd();
+
+                                nodeDetails.joinEndTime = (new Date()).getTime() - nodeDetails.joinBegTime;
+                                cmlog("-----------------------------------------------------------------------$$$$$$" + nodeDetails.joinEndTime);
+                                cmlog("-----------------------------------------------------------------------######" + nodeDetails.msgCount);
                                 break;
                 }
         }
 
-        self.listPeers = function(){
+        self.listPeers = function() {
                 var channel = nodeDetails.connectorTable[nodeDetails.successor];
 
+                nodeDetails.msgCount++;
                 channel.send({
                         srcPeerId: nodeDetails.peerId,
                         data: nodeDetails.peerId,
@@ -182,7 +307,12 @@ for (var i = 0; i < chord.nodeList.length; i++) {
         bootConn.on('p-forward-offer', function(fwddData) {
                 cmlog("Peer2: signal received");
                 var channel = new SimplePeer({
-                        trickle: false
+                        trickle: false,
+                        config: {
+                                iceServers: [{
+                                        url: 'stun:172.50.89.94'
+                                }]
+                        }
                 });
 
                 channel.on('ready', function() {
@@ -192,6 +322,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         nodeDetails.bootPeer.peerId = fwddData.offer.srcPeerId;
                         nodeDetails.bootPeer.connector = channel;
                         nodeDetails.connectorTable[fwddData.offer.srcPeerId] = channel;
+                        nodeDetails.msgCount++;
                         channel.send({
                                 srcPeerId: fwddData.offer.destPeerId,
                                 type: "chat-init",
@@ -206,18 +337,46 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         bootConn.emit('b-forward-reply', fwddData);
                 });
 
+
                 channel.signal(fwddData.offer.signal);
 
         });
-        
+
+        bootConn.on('update', function(updateData) {
+                if (updateData.isSucc) {
+                        cmlog("Updating successor: " + updateData.newConn);
+                        delete nodeDetails.connectorTable[nodeDetails.successor];
+                        nodeDetails.successor = parseInt(updateData.newConn);
+                        if (nodeDetails.connectorTable[nodeDetails.successor] !== 'undefined')
+                                self.connect(nodeDetails.successor);
+                } else {
+                        cmlog("Updating predecessor: " + updateData.newConn);
+                        delete nodeDetails.connectorTable[nodeDetails.predecessor];
+                        nodeDetails.predecessor = parseInt(updateData.newConn);
+                        // if(nodeDetails.connectorTable[nodeDetails.predecessor] !== 'undefined')
+                        //         self.connect(nodeDetails.predecessor);
+                }
+        });
+
+        self.checkConnection = function(peerId) {
+                nodeDetails.msgCount++;
+                try {
+                        nodeDetails.connectorTable[peerId].send();
+                } catch (err) {
+                        return false;
+                }
+                return true;
+        }
+
         self.channel = null;
 
-        self.messageHandler = function(message){
-                switch(message.type){
+        self.messageHandler = function(message) {
+                switch (message.type) {
 
                         case "chat-init":
                                 var channel = nodeDetails.connectorTable[message.srcPeerId];
                                 cmlog(message);
+                                nodeDetails.msgCount++;
                                 channel.send({
                                         srcPeerId: peerId,
                                         type: "chat-ack",
@@ -241,15 +400,21 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog(message);
                                 var path = message.path.split(",");
 
-                                if (path.length == 1){
+                                if (path.length == 1) {
                                         cmlog("Message for self");
                                         var conId = parseInt(message.data);
                                         nodeDetails.responseTable[message.msgId] = message.data;
 
                                         // cmlog(message.signal);
 
-                                        if( (typeof nodeDetails.connectorTable[conId] === 'undefined') && (message.signal != null) ){
-                                                cmlog("Form connection with "+conId);
+                                        if ((typeof nodeDetails.connectorTable[conId] === 'undefined') && (message.signal != null)) {
+                                                if (conId == nodeDetails.peerId) {
+                                                        cmlog("Cannot with connection with self");
+                                                        eval(message.func);
+                                                        return;
+                                                }
+
+                                                cmlog("Form connection with " + conId);
                                                 decSig = self.decodeSignal(message.signal);
 
                                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
@@ -260,18 +425,17 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                                 });
 
                                                 nodeDetails.channelTable[decSig.id].signal(decSig);
-                                        }
-                                        else{
-                                                cmlog("Connection already exists with "+conId);
-                                                cmlog("Executing :"+message.func);
+                                        } else {
+                                                cmlog("Connection already exists with " + conId);
+                                                cmlog("Executing :" + message.func);
                                                 eval(message.func);
                                         }
-                                }
-                                else{
-                                        var returnPeerId = parseInt(path.pop(),10);
+                                } else {
+                                        var returnPeerId = parseInt(path.pop(), 10);
                                         cmlog("Forward to " + returnPeerId);
                                         message.path = path.join();
                                         var channel = nodeDetails.connectorTable[returnPeerId];
+                                        nodeDetails.msgCount++;
                                         channel.send(message);
                                 }
                                 break;
@@ -282,10 +446,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog(message);
                                 decSig = self.decodeSignal(message.signal);
 
-                                cmlog("decSig:"); cmlog(decSig);
+                                cmlog("decSig:");
+                                cmlog(decSig);
 
                                 nodeDetails.channelTable[decSig.id] = new SimplePeer({
-                                        trickle: false
+                                        trickle: false,
+                                        config: {
+                                                iceServers: [{
+                                                        url: 'stun:172.50.89.94'
+                                                }]
+                                        }
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('signal', function(signal) {
@@ -307,7 +477,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         var conId = parseInt(message.path.split(",")[1]);
                                         nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
                                         nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
-                                        cmlog("Connected to "+message.srcPeerId);
+                                        cmlog("Connected to " + message.srcPeerId);
                                 });
 
                                 // cmlog("Before : " + message.signal);
@@ -317,14 +487,31 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "listPeers":
                                 cmlog(message);
                                 /*Get list*/
-                                if(message.srcPeerId == nodeDetails.peerId){
-                                        cmlog("LIST OF PEERS IN NETWORK" + message.data);
+                                if (message.srcPeerId == nodeDetails.peerId) {
+                                        cmlog("LIST OF PEERS IN NETWORK: " + message.data);
                                 }
                                 /*forward*/
-                                else{
+                                else {
                                         var channel = nodeDetails.connectorTable[nodeDetails.successor];
                                         message.data += ", " + nodeDetails.peerId;
-                                        cmlog("Forward" +message);
+                                        cmlog("Forward" + message);
+                                        nodeDetails.msgCount++;
+                                        channel.send(message);
+                                }
+                                break;
+
+                        case "msgCount":
+                                cmlog(message);
+                                /*Get list*/
+                                if (message.srcPeerId == nodeDetails.peerId) {
+                                        cmlog("LIST OF PEERS IN NETWORK: " + message.data);
+                                }
+                                /*forward*/
+                                else {
+                                        var channel = nodeDetails.connectorTable[nodeDetails.successor];
+                                        message.data += ", " + nodeDetails.peerId;
+                                        cmlog("Forward" + message);
+                                        nodeDetails.msgCount++;
                                         channel.send(message);
                                 }
                                 break;
@@ -336,16 +523,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 if (fromKey > toKey) return (peerId > fromKey || peerId < toKey);
                 else return (peerId > fromKey && peerId < toKey);
         }
-        self.encodeSignal = function(signal){
-            pack = {
-                id: signal.id,
-                sig: signal
-            };
-            return Base64.encode(JSON.stringify(pack));
+        self.encodeSignal = function(signal) {
+                pack = {
+                        id: signal.id,
+                        sig: signal
+                };
+                return Base64.encode(JSON.stringify(pack));
         }
-        self.decodeSignal = function (signal){
-            pack = JSON.parse( Base64.decode(signal).replace("\n", "\\r\\n") )
-            pack.sig.id = pack.id;
-            return pack.sig;
+        self.decodeSignal = function(signal) {
+                pack = JSON.parse(Base64.decode(signal).replace("\n", "\\r\\n"))
+                pack.sig.id = pack.id;
+                return pack.sig;
         }
 }
