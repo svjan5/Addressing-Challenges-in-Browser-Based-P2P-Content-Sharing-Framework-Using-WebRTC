@@ -19,7 +19,7 @@ function Peer(config) {
         self.events = new ee2({
                 wildcard: true,
                 newListener: false,
-                maxListeners: 20
+                maxListeners: 0
         });
 
         // Establish socket io connection with  bootstrap
@@ -40,7 +40,7 @@ function Peer(config) {
                         self.nodeDetails = new NodeDetails(self, self.peerId, regData.n_fingers);
                         self.channelManager = new ChannelManager(self.peerId, bootConn, self.nodeDetails);
 
-                        if (regData.destPeerId != null) {
+                        if (regData.destPeerId != null) { //if this is not the first peer in the network
                                 self.channelManager.connect(regData.destPeerId);
                         }
                 });

@@ -16,6 +16,22 @@ var Hapi = require('hapi');
 var io = require('socket.io');
 var config = require('config');
 // var Id = require('dht-id');
+var randomPeers =       [18, 41, 26, 52, 0, 35, 40, 16, 60, 30, 31, 13, 2, 20, 34, 23, 14, 42, 
+                        22, 46, 39, 36, 62, 17, 61, 54, 15, 4, 38, 58, 53, 21, 45, 1, 29, 24, 
+                        44, 32, 50, 55, 43, 57, 28, 48, 25, 63, 47, 8, 7, 27, 49, 6, 33, 19, 
+                        12, 5, 59, 3, 9, 56, 37, 51, 11, 10];
+var counter = 0;
+
+var peers = {}; 
+// id : socket
+
+// Console for server
+var repl = require('repl');
+var prompt = repl.start({
+        prompt: 'server>'
+});
+prompt.context.listPeers = function() {return Object.keys(peers)};
+prompt.context.peers = peers;
 
 var server = new Hapi.Server(config.get('hapi.options'));
 
@@ -35,7 +51,7 @@ server.route({
         method: 'GET',
         path: '/dht',
         handler: function(request, reply) {
-                reply(peers);
+                reply(prompt.context.listPeers());
         }
 });
 
@@ -46,16 +62,6 @@ function started() {
         console.log('Signaling server has started on:', server.info.uri);
 }
 
-var peers = {}; 
-// id : socket
-
-// Console for server
-var repl = require('repl');
-var prompt = repl.start({
-        prompt: 'server>'
-});
-prompt.context.peers = peers;
-prompt.context.listPeers = function() {return Object.keys(peers)};
 
 function mainServerFunction(socket) {
 
@@ -68,15 +74,20 @@ function mainServerFunction(socket) {
 
         function registerPeer() {
                 // Handling duplicate peerId
-                do {
-                        var peerId = Math.floor(Math.random() * Math.pow(2, config.get('dtrm.n_fingers')));
-                } while (peers[peerId] !== undefined);
+                var peerId = -1;
+                // do {
+                //         peerId = Math.floor(Math.random() * Math.pow(2, config.get('dtrm.n_fingers')));
+                // } while (peers[peerId] !== undefined);
+                peerId = randomPeers[counter++];
 
                 var destPeerId = null;
 
                 if (Object.keys(peers).length > 0) {
                         var keys = Object.keys(peers);
-                        destPeerId = parseInt(keys[Math.floor(Math.random() * keys.length)]);
+                        keys.push(peerId);
+                        keys = keys.sort();
+                        destPeerId = keys[(keys.indexOf(peerId) + 1)%keys.length];
+                        // destPeerId = parseInt(keys[Math.floor(Math.random() * keys.length)]);
                 }
 
                 peers[peerId] = socket;

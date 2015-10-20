@@ -2,8 +2,9 @@ console.profile("Main Profiler");
 var node = require('./peer/peer.js');
 
 var config = {
-        // signalingURL: 'http://localhost:9000',
-        signalingURL: 'http://172.50.89.94:9000',
+        signalingURL: 'http://localhost:9000',
+        // signalingURL: 'http://192.168.0.101:9000',
+        // signalingURL: 'http://172.50.86.16:9000',
         logging: true
 };
 

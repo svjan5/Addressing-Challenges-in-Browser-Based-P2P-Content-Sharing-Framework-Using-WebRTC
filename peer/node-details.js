@@ -27,6 +27,8 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.msgCount = 0;
         self.connected = false;
 
+        self.iceList = ["stun:192.168.0.101"/*, "stun:192.168.0.102", "stun:192.168.0.103", "stun:192.168.0.100", "stun:192.168.0.106", "stun:192.168.0.107"*/];
+
         self.channelTable = {};
         self.connectorTable = {};
         self.responseTable = {};
@@ -140,9 +142,10 @@ function NodeDetails(peer, peerId, n_fingers) {
                 self.channelTable[signalId] = new SimplePeer({
                         initiator: true,
                         trickle: false,
+                        reconnectTimer: 1000,
                         config: {
                                 iceServers: [{
-                                        url: 'stun:172.50.89.94'
+                                        url: self.iceList[self.peerId % self.iceList.length]
                                 }]
                         }
                 });
@@ -160,9 +163,10 @@ function NodeDetails(peer, peerId, n_fingers) {
                 self.channelTable[signalId] = new SimplePeer({
                         initiator: true,
                         trickle: false,
+                        reconnectTimer: 1000,
                         config: {
                                 iceServers: [{
-                                        url: 'stun:172.50.89.94'
+                                        url: self.iceList[self.peerId % self.iceList.length]
                                 }]
                         }
                 });
@@ -299,27 +303,91 @@ function NodeDetails(peer, peerId, n_fingers) {
 
         }
 
-        self.fixFingers = function(i) {
+        self.destroyExtraConn = function(){
+                existing = Object.keys(self.connectorTable).sort();
+                needed = [];
+
+                for (var i = 0; i < self.fingerTable.length ; i++) {
+                        needed.push(self.fingerTable[i].fingerId);
+                };
+                needed.push(self.successor);
+                needed.push(self.predecessor);
+                needed.push(self.bootPeer.peerId);
+                
+                existing = existing.map(function (x) {return parseInt(x, 10); });
+
+                needed.sort(function(a, b){return a-b});
+                existing.sort(function(a, b){return a-b});
+                
+
+                existing = existing.filter(function(elem, index, self) {return index == self.indexOf(elem); })
+                needed = needed.filter(function(elem, index, self) {return index == self.indexOf(elem); })
+
+                ndlog("Beginning: ");
+                ndlog(typeof(existing));
+                ndlog(typeof(needed));
+                ndlog("Exisiting: " + existing);
+                ndlog("Needed: " + needed);
+
+                diff = existing.filter(function(x) { return needed.indexOf(x) < 0 })
+                diff = [];
+                for (var i=0; i<existing.length; i++){
+                        if( needed.indexOf(existing[i]) == -1)
+                                diff.push(existing[i]);
+                }
+
+                ndlog("Diff: " + diff); 
+
+                for (var i=0; i<diff.length; i++){
+                        self.connectorTable[diff[i]].destroy();
+                        delete self.connectorTable[diff[i]];
+                }
+                // var pnt1=0, pnt2=0;
+                // while( pnt1<existing.length ){
+                //         if(existing[pnt1] == needed[pnt2]){
+                //                 pnt1++;
+                //                 pnt2++;
+                //         }
+                //         else{
+                //                 self.connectorTable[existing[pnt1]].destroy();
+                //                 delete self.connectorTable[existing[pnt1]];
+                //                 existing.splice(pnt1, 1);
+                //         }
+                // }
+        }
+
+        self.fixFingers = function(i, srcPeerId) {
                 ndlog("CALLED FIX FINGERS: " + i);
-                if (i >= self.fingerTable.length) return;
-                // for (var i = 0; i < self.fingerTable.length; i++) {
+
+                if (i >= self.fingerTable.length){
+                        // channelManager.getMsgCount();
+                        if(srcPeerId != null){
+                                var channel = self.connectorTable[self.successor];
+                                channel.send({
+                                        srcPeerId: srcPeerId,
+                                        type: "fixfingers"
+                                });
+                        }
+                        // self.destroyExtraConn();
+                        return;
+                }
+
                 var key = self.fingerTable[i].start;
                 var msgId = new Id().toDec();
                 self.responseTable[msgId] = null;
+
                 self.initFindSuccessor(
                         self.peerId,
                         key,
                         "",
                         msgId,
-                        "nodeDetails.updateFinger(" + i + ", message.data)"
-                        // "nodeDetails.fingerTable["+i+"].fingerId = " + "message.data;"
+                        "nodeDetails.updateFinger(" + i + ", message.data," + srcPeerId + ")"
                 );
-                // };
         }
 
-        self.updateFinger = function(i, data) {
+        self.updateFinger = function(i, data, srcPeerId) {
                 self.fingerTable[i].fingerId = data;
-                self.fixFingers(i + 1);
+                self.fixFingers(i + 1, srcPeerId);
         }
 
         self.closestPrecedingFinger = function(id) {
