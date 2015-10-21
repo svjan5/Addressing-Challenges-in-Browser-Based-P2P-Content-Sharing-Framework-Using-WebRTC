@@ -3,8 +3,8 @@ console.profile("Main Profiler");
 var node = require('./peer/peer.js');
 
 var config = {
-        signalingURL: 'http://localhost:9000',
-        // signalingURL: 'http://192.168.0.101:9000',
+        // signalingURL: 'http://localhost:9000',
+        signalingURL: 'http://192.168.0.101:9000',
         // signalingURL: 'http://172.50.86.16:9000',
         logging: true
 };
@@ -439,6 +439,15 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog(message);
                                 break;
 
+                        case "forward":
+                                if(message.destPeerId != nodeDetails.peerId){
+                                        nodeDetails.forwardPacket(message);
+                                        return;
+                                }
+                                cmlog("FORWARD reached destination");
+                                cmlog(message);
+                                break;
+
                         case "request":
                                 cmlog("Request Received");
                                 cmlog(message);
@@ -491,6 +500,72 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 }
                                 break;
 
+                        case "peer-connect-offer":
+                                cmlog("In peer-connect-offer:")
+                                cmlog(message);
+
+                                if(message.destPeerId != nodeDetails.peerId){
+                                        cmlog("Packet forwarded");
+                                        nodeDetails.forwardPacket(message);
+                                        return;
+                                }
+
+                                decSig = self.decodeSignal(message.signal);
+
+                                nodeDetails.channelTable[decSig.id] = new SimplePeer({
+                                        trickle: false,
+                                        reconnectTimer: 1000,
+                                        config: {iceServers: [{url: nodeDetails.iceList[nodeDetails.peerId % nodeDetails.iceList.length] }] }
+                                });
+
+                                nodeDetails.channelTable[decSig.id].on('signal', function(signal) {
+                                        cmlog('peer-connect: signal -- Peer2 : sending back my signal data');
+
+                                        signal.id = decSig.id;
+                                        signal = self.encodeSignal(signal);
+
+                                        nodeDetails.forwardPacket({
+                                                type:"peer-connect-reply",
+                                                srcPeerId: nodeDetails.peerId,
+                                                destPeerId: message.srcPeerId,
+                                                signal: signal
+                                        });
+                                });
+
+                                nodeDetails.channelTable[decSig.id].on('ready', function() {
+                                        cmlog("peer-connect :ready")
+                                        cmlog("Connected to " + message.srcPeerId);
+                                        var conId = message.srcPeerId;
+
+                                        nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
+                                        nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
+                                });
+
+                                nodeDetails.channelTable[decSig.id].signal(decSig);
+                                break;
+
+                        case "peer-connect-reply":
+                                cmlog("In peer-connect-reply:")
+                                cmlog(message);
+                                var conId = message.srcPeerId;
+                                
+                                if(message.destPeerId != nodeDetails.peerId){
+                                        cmlog("Packet forwarded");
+                                        nodeDetails.forwardPacket(message);
+                                        return;
+                                }
+
+                                decSig = self.decodeSignal(message.signal);
+
+                                nodeDetails.channelTable[decSig.id].on('ready', function() {
+                                        cmlog('Connected to ' + conId);
+                                        nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
+                                        eval(message.func);
+                                        nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
+                                });
+
+                                nodeDetails.channelTable[decSig.id].signal(decSig);
+                                break;
 
                         case "signal-accept":
                                 cmlog("In signal-accept:")
@@ -633,6 +708,7 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.joinEndTime = -1;
         self.msgCount = 0;
         self.connected = false;
+        self.strategy = false;
 
         self.iceList = ["stun:192.168.0.101"/*, "stun:192.168.0.102", "stun:192.168.0.103", "stun:192.168.0.100", "stun:192.168.0.106", "stun:192.168.0.107"*/];
 
@@ -676,6 +752,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                 self.queryEndTime = (new Date()).getTime() - self.queryBegTime;
                 ndlog("----------------------------------------------------------------------->>>>>" + self.queryEndTime);
         }
+
 
         self.findSuccessor = function(destPeerId, id, path, msgId, func, signal) {
                 ndlog("FIND SUCCESSOR(" + destPeerId + ", " + id + ", " + path + ", " + msgId + ", " + func + ", " + "signal" + ")");
@@ -764,6 +841,53 @@ function NodeDetails(peer, peerId, n_fingers) {
                 });
         }
 
+
+        self.forwardPacket = function(packet){
+                var destPeerId = null;
+                var peerId = packet.destPeerId;
+
+                if(self.peerId == peerId){
+                        ndlog("Message for self !!!!!!!!!!!!!!!!!!!!");
+                        return;
+                }
+                else if (isBetween(peerId, self.peerId, self.successor) || peerId == self.successor) {
+                        destPeerId = self.successor;
+                }
+                else {
+                        destPeerId = self.closestPrecedingFinger(peerId);
+                        if(destPeerId == self.peerId)
+                                destPeerId = self.successor;
+                }
+
+                var channel = self.connectorTable[destPeerId];
+                ndlog("forwardPacket: forwarding to :"+ destPeerId); ndlog(packet);
+
+                channel.send(packet);
+        }
+        
+        self.connectViaPeer = function(peerId){
+                var signalId = new Id().toDec();
+
+                self.channelTable[signalId] = new SimplePeer({
+                        initiator: true,
+                        trickle: false,
+                        reconnectTimer: 1000,
+                        config: {iceServers: [{url: self.iceList[self.peerId % self.iceList.length] }] }
+                });
+
+                self.channelTable[signalId].on('signal', function(signal) {
+                        signal.id = signalId;
+                        signal = peer.channelManager.encodeSignal(signal);
+
+                        self.forwardPacket({
+                                type: "peer-connect-offer",
+                                srcPeerId: self.peerId,
+                                destPeerId: peerId,
+                                signal: signal
+                        });
+                });
+        }
+
         self.initFindPredOfSucc = function(destPeerId, path, msgId, func) {
                 var signalId = new Id().toDec();
 
@@ -842,7 +966,6 @@ function NodeDetails(peer, peerId, n_fingers) {
                                 signal: signal
                         });
                 }
-
         }
 
         self.notifyPredecessor = function(destPeerId, data, path, msgId, func) {

@@ -26,6 +26,7 @@ function NodeDetails(peer, peerId, n_fingers) {
         self.joinEndTime = -1;
         self.msgCount = 0;
         self.connected = false;
+        self.isICESlow = false;
 
         self.iceList = ["stun:192.168.0.101"/*, "stun:192.168.0.102", "stun:192.168.0.103", "stun:192.168.0.100", "stun:192.168.0.106", "stun:192.168.0.107"*/];
 
@@ -69,6 +70,7 @@ function NodeDetails(peer, peerId, n_fingers) {
                 self.queryEndTime = (new Date()).getTime() - self.queryBegTime;
                 ndlog("----------------------------------------------------------------------->>>>>" + self.queryEndTime);
         }
+
 
         self.findSuccessor = function(destPeerId, id, path, msgId, func, signal) {
                 ndlog("FIND SUCCESSOR(" + destPeerId + ", " + id + ", " + path + ", " + msgId + ", " + func + ", " + "signal" + ")");
@@ -157,25 +159,76 @@ function NodeDetails(peer, peerId, n_fingers) {
                 });
         }
 
-        self.initFindPredOfSucc = function(destPeerId, path, msgId, func) {
+
+        self.forwardPacket = function(packet){
+                var destPeerId = null;
+                var peerId = packet.destPeerId;
+
+                if(self.peerId == peerId){
+                        ndlog("Message for self !!!!!!!!!!!!!!!!!!!!");
+                        return;
+                }
+                else if (isBetween(peerId, self.peerId, self.successor) || peerId == self.successor) {
+                        destPeerId = self.successor;
+                }
+                else {
+                        destPeerId = self.closestPrecedingFinger(peerId);
+                        if(destPeerId == self.peerId)
+                                destPeerId = self.successor;
+                }
+
+                var channel = self.connectorTable[destPeerId];
+                ndlog("forwardPacket: forwarding to :"+ destPeerId); ndlog(packet);
+                channel.send(packet);
+        }
+        
+        self.connectViaPeer = function(peerId){
                 var signalId = new Id().toDec();
 
                 self.channelTable[signalId] = new SimplePeer({
                         initiator: true,
                         trickle: false,
                         reconnectTimer: 1000,
-                        config: {
-                                iceServers: [{
-                                        url: self.iceList[self.peerId % self.iceList.length]
-                                }]
-                        }
+                        config: {iceServers: [{url: self.iceList[self.peerId % self.iceList.length] }] }
                 });
 
                 self.channelTable[signalId].on('signal', function(signal) {
                         signal.id = signalId;
                         signal = peer.channelManager.encodeSignal(signal);
-                        self.findPredOfSucc(destPeerId, path, msgId, func, signal);
+
+                        self.forwardPacket({
+                                type: "peer-connect-offer",
+                                srcPeerId: self.peerId,
+                                destPeerId: peerId,
+                                signal: signal
+                        });
                 });
+        }
+
+        self.initFindPredOfSucc = function(destPeerId, path, msgId, func) {
+                if(!self.isICESlow){
+                        var signalId = new Id().toDec();
+
+                        self.channelTable[signalId] = new SimplePeer({
+                                initiator: true,
+                                trickle: false,
+                                reconnectTimer: 1000,
+                                config: {
+                                        iceServers: [{
+                                                url: self.iceList[self.peerId % self.iceList.length]
+                                        }]
+                                }
+                        });
+
+                        self.channelTable[signalId].on('signal', function(signal) {
+                                signal.id = signalId;
+                                signal = peer.channelManager.encodeSignal(signal);
+                                self.findPredOfSucc(destPeerId, path, msgId, func, signal);
+                        });
+                }
+                else{
+                        self.findPredOfSucc(destPeerId, path, msgId, func, null);
+                }
         }
 
         self.findPredOfSucc = function(destPeerId, path, msgId, func, signal) {
@@ -235,7 +288,6 @@ function NodeDetails(peer, peerId, n_fingers) {
                                 signal: signal
                         });
                 }
-
         }
 
         self.notifyPredecessor = function(destPeerId, data, path, msgId, func) {

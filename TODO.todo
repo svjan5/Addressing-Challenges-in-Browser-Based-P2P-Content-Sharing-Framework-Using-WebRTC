@@ -1,0 +1,6 @@
+Changing find successor and findpredofSucc strategy:
+ ☐ --> requires to implement "Connect through peer" method. 
+ ☐  small change in existing find successor function
+
+Chaging forwarding approach (removing path storage technique):
+ ☐ -->  requires some change in message handler and find successor function

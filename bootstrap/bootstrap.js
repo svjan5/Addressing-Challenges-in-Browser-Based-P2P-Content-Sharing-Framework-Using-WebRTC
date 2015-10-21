@@ -78,7 +78,7 @@ function mainServerFunction(socket) {
                 // do {
                 //         peerId = Math.floor(Math.random() * Math.pow(2, config.get('dtrm.n_fingers')));
                 // } while (peers[peerId] !== undefined);
-                peerId = randomPeers[counter++];
+                peerId = randomPeers[(counter++)%randomPeers.length];
 
                 var destPeerId = null;
 
