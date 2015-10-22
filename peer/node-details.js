@@ -171,6 +171,9 @@ function NodeDetails(peer, peerId, n_fingers) {
                 else if (isBetween(peerId, self.peerId, self.successor) || peerId == self.successor) {
                         destPeerId = self.successor;
                 }
+                else if (Object.keys(self.connectorTable).indexOf(peerId+"") != -1){
+                        destPeerId = peerId;
+                }
                 else {
                         destPeerId = self.closestPrecedingFinger(peerId);
                         if(destPeerId == self.peerId)
@@ -323,8 +326,20 @@ function NodeDetails(peer, peerId, n_fingers) {
                 }
 
         }
+
+        self.notifySuccessor = function(callonId, msgId, func){
+                self.msgCount++;
+                self.forwardPacket({
+                        srcPeerId: self.peerId,
+                        destPeerId: callonId,
+                        msgId: msgId,
+                        type: "request",
+                        data: "nodeDetails.successor = " + self.peerId
+                });
+        }
+
         //"nodeDetails.stabilize(52,",45",38326717949206,"self.joinNetwork(4,38326717949206)" )"
-        self.stabilize = function(destPeerId, path, msgId, func) {
+        self.stabilize = function(destPeerId, msgId, func) {
                 ndlog("STABILIZE(" + destPeerId + ", " + path + ", " + msgId + ", " + func + ")");
                 if (destPeerId == self.peerId) {
                         var data = {

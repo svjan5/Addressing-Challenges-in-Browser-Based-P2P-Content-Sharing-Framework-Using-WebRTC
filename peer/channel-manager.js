@@ -308,13 +308,20 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 var msgId = new Id().toDec();
 
                                 var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor : nodeDetails.succPreceding;
-                                nodeDetails.stabilize(
+                                nodeDetails.notifySuccessor(
                                         callStabilizeOn,
                                         "",
                                         msgId,
                                         "self.joinNetwork(4," + msgId + ")"
                                 );
-                                break;
+                                nodeDetails.predecessor = callStabilizeOn;
+                                // nodeDetails.stabilize(
+                                //         callStabilizeOn,
+                                //         "",
+                                //         msgId,
+                                //         "self.joinNetwork(4," + msgId + ")"
+                                // );
+                                // break;
                         case 4:
                                 cmlog("JOIN NETWORK COMPLETED: \n Successor: " + nodeDetails.successor + "\tPredecessor: " + nodeDetails.predecessor);
                                 nodeDetails.connected = true;
@@ -324,11 +331,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog("-----------------------------------------------------------------------$$$$$$  " + nodeDetails.joinEndTime);
                                 // cmlog("-----------------------------------------------------------------------######  " + nodeDetails.msgCount);
                                 self.getMsgCount();
-
-                                // setTimeout(function() {
-                                //         self.fixAllFingers();
-                                // }, 2000);
-
                                 break;
                 }
         }
