@@ -259,14 +259,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 delete nodeDetails.responseTable[msgId];
                                 isStabilize = false;
 
-                        case "stabilize":
-
-                                if (isStabilize) {
-                                        cmlog("Stabilize got data:");
-                                        cmlog(data);
-                                        stabilizeData = data;
-                                }
-
                                 var msgId = new Id().toDec();
                                 nodeDetails.responseTable[msgId] = null;
 
@@ -289,47 +281,28 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                                 nodeDetails.successor = nodeDetails.succPreceding;
                                         }
                                 }
-                                var func = (!isStabilize) ? "self.joinNetwork(3," + msgId + ")" 
-                                						  : "nodeDetails.msgToSelf(" + stabilizeData.srcPeerId + "," + stabilizeData.msgId + ",\\\"" + stabilizeData.type + "\\\"," + stabilizeData.data + ",\\\"" + stabilizeData.path + "\\\",'" + stabilizeData.func + "');";
 
-                                isStabilize = true;
                                 var msgId = new Id().toDec();
                                 nodeDetails.notifyPredecessor(
                                         nodeDetails.successor,
-                                        nodeDetails.peerId,
-                                        "",
-                                        msgId,
-                                        func
+                                        msgId
                                 );
-                                break;
 
-                        case 3:
-                                cmlog("Join Network case 2 successful");
                                 var msgId = new Id().toDec();
-
                                 var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor : nodeDetails.succPreceding;
                                 nodeDetails.notifySuccessor(
                                         callStabilizeOn,
-                                        "",
-                                        msgId,
-                                        "self.joinNetwork(4," + msgId + ")"
+                                        msgId
                                 );
+
                                 nodeDetails.predecessor = callStabilizeOn;
-                                // nodeDetails.stabilize(
-                                //         callStabilizeOn,
-                                //         "",
-                                //         msgId,
-                                //         "self.joinNetwork(4," + msgId + ")"
-                                // );
-                                // break;
-                        case 4:
+
                                 cmlog("JOIN NETWORK COMPLETED: \n Successor: " + nodeDetails.successor + "\tPredecessor: " + nodeDetails.predecessor);
                                 nodeDetails.connected = true;
                                 console.profileEnd();
 
                                 nodeDetails.joinEndTime = (new Date()).getTime() - nodeDetails.joinBegTime;
                                 cmlog("-----------------------------------------------------------------------$$$$$$  " + nodeDetails.joinEndTime);
-                                // cmlog("-----------------------------------------------------------------------######  " + nodeDetails.msgCount);
                                 self.getMsgCount();
                                 break;
                 }
@@ -427,8 +400,8 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "request":
                                 cmlog("Request Received");
                                 cmlog(message);
-                                cmlog("Executing :");
-                                var data = eval(message.data);
+                                cmlog("Executing :" + message.data);
+                                eval(message.data);
                                 break;
 
                         case "response":
@@ -476,6 +449,46 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 }
                                 break;
 
+                        case "strategy2res":
+                                cmlog("In Strategy 2 response");
+                                cmlog(message);
+
+                                if (message.destPeerId == nodeDetails.peerId) {
+                                        cmlog("Message for self");
+                                        var conId = parseInt(message.data);
+                                        nodeDetails.responseTable[message.msgId] = message.data;
+
+                                        if (typeof nodeDetails.connectorTable[conId] === 'undefined' && message.data != null) {
+                                                if (conId == nodeDetails.peerId) {
+                                                        cmlog("s2res: Cannot with connection with self");
+                                                        eval(message.func);
+                                                        return;
+                                                }
+
+                                                cmlog("s2res: Form connection with " + conId);
+                                                nodeDetails.connectViaPeer(conId, message.func);
+                                        } 
+                                        else {
+                                                cmlog("s2res: Connection already exists with " + conId);
+                                                cmlog("s2res: Executing :" + message.func);
+                                                eval(message.func);
+                                        }
+                                }
+                                else{
+                                        nodeDetails.forwardPacket(message);
+                                }
+                                break;
+
+                        case "strategy2req":
+                                cmlog("Strategy reqest: received");
+                                cmlog(message);
+                                nodeDetails.responseTable[message.msgId] = message.data;
+                                if(nodeDetails.connectorTable[message.srcPeerId] === 'undefined' && message.data != null) 
+                                        nodeDetails.connectViaPeer(message.data, message.func);
+                                else 
+                                        eval(message.func);
+                                break;
+
                         case "peer-connect-offer":
                                 cmlog("In peer-connect-offer:")
                                 cmlog(message);
@@ -500,18 +513,18 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         signal.id = decSig.id;
                                         signal = self.encodeSignal(signal);
 
-                                        nodeDetails.forwardPacket({
-                                                type:"peer-connect-reply",
-                                                srcPeerId: nodeDetails.peerId,
-                                                destPeerId: message.srcPeerId,
-                                                signal: signal
-                                        });
+                                        message.destPeerId = message.srcPeerId;
+                                        message.srcPeerId = nodeDetails.peerId;
+                                        message.signal = signal;
+                                        message.type = "peer-connect-reply";
+
+                                        nodeDetails.forwardPacket(message);
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
                                         cmlog("peer-connect :ready")
-                                        cmlog("Connected to " + message.srcPeerId);
-                                        var conId = message.srcPeerId;
+                                        cmlog("Connected to " + message.destPeerId);
+                                        var conId = message.destPeerId;
 
                                         nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
                                         nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
@@ -536,6 +549,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
                                         cmlog('Connected to ' + conId);
                                         nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
+                                        cmlog("Executing :");
                                         eval(message.func);
                                         nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
                                 });
@@ -546,13 +560,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "signal-accept":
                                 cmlog("In signal-accept:")
                                 cmlog(message);
-
-                                // if(message.signal == null){
-                                //         forwardPacket({
-                                //                 type:
-
-                                //         })
-                                // }
 
                                 decSig = self.decodeSignal(message.signal);
 
