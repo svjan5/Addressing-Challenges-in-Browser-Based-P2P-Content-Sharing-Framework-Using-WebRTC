@@ -247,7 +247,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 nodeDetails.initFindSuccessor(
                                         nodeDetails.bootPeer.peerId,
                                         nodeDetails.peerId,
-                                        "",
                                         msgId,
                                         "self.joinNetwork(1," + msgId + ")"
                                 );
@@ -264,7 +263,6 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                 nodeDetails.initFindPredOfSucc(
                                         nodeDetails.successor,
-                                        "",
                                         msgId,
                                         "self.joinNetwork(2," + msgId + ")"
                                 );
@@ -400,21 +398,18 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "request":
                                 cmlog("Request Received");
                                 cmlog(message);
-                                cmlog("Executing :" + message.data);
+                                cmlog("Executing :");
                                 eval(message.data);
                                 break;
 
                         case "response":
                                 cmlog("In response");
                                 cmlog(message);
-                                var path = message.path.split(",");
 
-                                if (path.length == 1) {
+                                if (message.destPeerId == nodeDetails.peerId) {
                                         cmlog("Message for self");
                                         var conId = parseInt(message.data);
                                         nodeDetails.responseTable[message.msgId] = message.data;
-
-                                        // cmlog(message.signal);
 
                                         if ((typeof nodeDetails.connectorTable[conId] === 'undefined') && (message.signal != null)) {
                                                 if (conId == nodeDetails.peerId) {
@@ -434,18 +429,15 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                                 });
 
                                                 nodeDetails.channelTable[decSig.id].signal(decSig);
-                                        } else {
+                                        } 
+                                        else {
                                                 cmlog("Connection already exists with " + conId);
-                                                cmlog("Executing :" + message.func);
+                                                cmlog("Executing :");
                                                 eval(message.func);
                                         }
-                                } else {
-                                        var returnPeerId = parseInt(path.pop(), 10);
-                                        cmlog("Forward to " + returnPeerId);
-                                        message.path = path.join();
-                                        var channel = nodeDetails.connectorTable[returnPeerId];
-                                        nodeDetails.msgCount++;
-                                        channel.send(message);
+                                } 
+                                else {
+                                        nodeDetails.forwardPacket(message);
                                 }
                                 break;
 
@@ -470,7 +462,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         } 
                                         else {
                                                 cmlog("s2res: Connection already exists with " + conId);
-                                                cmlog("s2res: Executing :" + message.func);
+                                                cmlog("s2res: Executing :" );
                                                 eval(message.func);
                                         }
                                 }
@@ -565,15 +557,12 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
                                 cmlog("decSig:");
                                 cmlog(decSig);
+                                var conId = message.conId;
 
                                 nodeDetails.channelTable[decSig.id] = new SimplePeer({
                                         trickle: false,
                                         reconnectTimer: 1000,
-                                        config: {
-                                                iceServers: [{
-                                                        url: nodeDetails.iceList[nodeDetails.peerId % nodeDetails.iceList.length]
-                                                }]
-                                        }
+                                        config: {iceServers: [{url: nodeDetails.iceList[nodeDetails.peerId % nodeDetails.iceList.length] }] }
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('signal', function(signal) {
@@ -582,20 +571,19 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.signal = signal;
                                         message.signal.id = decSig.id;
                                         message.signal = self.encodeSignal(message.signal);
-
-                                        // cmlog("After : " + message.signal);
-
+                                        message.destPeerId = message.conId;
+                                        message.srcPeerId = nodeDetails.srcPeerId;
                                         message.data = nodeDetails.peerId;
-                                        nodeDetails.msgToSelf(message.srcPeerId, message.msgId, "response", message.data, message.path, message.func, message.signal);
+
+                                        message.type = "response";
+                                        self.messageHandler(message);
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
                                         cmlog("signal-accept :ready")
-
-                                        var conId = parseInt(message.path.split(",")[1]);
                                         nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
                                         nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
-                                        cmlog("Connected to " + message.srcPeerId);
+                                        cmlog("Connected to " + message.conId);
                                 });
 
                                 // cmlog("Before : " + message.signal);
