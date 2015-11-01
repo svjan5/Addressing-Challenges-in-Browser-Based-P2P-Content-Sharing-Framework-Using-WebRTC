@@ -1,0 +1,13 @@
+n,msg,type
+1,5,logn
+2,5,logn
+4,8,logn
+8,14,logn
+16,16,logn
+32,21,logn
+1,5,n
+2,5,n
+4,13,n
+8,24,n
+16,31,n
+32,59,n

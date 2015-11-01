@@ -37,11 +37,16 @@ function Peer(config) {
                         self.events.emit('registered', {
                                 peerId: regData.peerId
                         });
-                        self.nodeDetails = new NodeDetails(self, self.peerId, regData.n_fingers);
+                        self.nodeDetails = new NodeDetails(self, self.peerId, regData.n_fingers, 
+                                                           regData.stun_servers, regData.post_url, 
+                                                           regData.strategy, regData.doFix);
                         self.channelManager = new ChannelManager(self.peerId, bootConn, self.nodeDetails);
 
                         if (regData.destPeerId != null) { //if this is not the first peer in the network
                                 self.channelManager.connect(regData.destPeerId);
+                        }
+                        else{
+                            self.nodeDetails.connected = true;
                         }
                 });
 

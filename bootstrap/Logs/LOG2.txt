@@ -1,0 +1,222 @@
+Strategy 1; without fix fingers; Stun: local forwardMessage delay: 200ms
+---------------------------------------------------------------------------
+41 4069 5
+26 7701 9
+52 9422 10
+0 10132 11
+35 10830 12
+40 12492 13
+16 13171 14
+60 13885 15
+30 14607 16
+31 16292 17
+13 19994 18
+2 17981 19
+20 19385 20
+34 20069 21
+23 20757 22
+14 22474 23
+42 23180 24
+22 23875 25
+46 24605 26
+39 26158 27
+36 26959 28
+62 27603 29
+17 29268 30
+61 29980 31
+54 30657 32
+15 32355 33
+-----------------------------------------------------
+41 3658 5
+26 8371 9
+52 9027 10
+0 9803 11
+35 11517 12
+40 12225 13
+16 12907 14
+60 13594 15
+30 14975 16
+31 15981 17
+13 16676 18
+2 18342 19
+20 19044 20
+34 19757 21
+23 20417 22
+14 21076 23
+42 21789 24
+22 22993 25
+46 23664 26
+39 25348 27
+36 26079 28
+62 26706 29
+17 28399 30
+61 28989 31
+54 29819 32
+15 31495 33
+4 32224 34
+38 32914 35
+58 33587 36
+53 34236 37
+21 34946 38
+45 36585 39
+1 37286 40
+29 37978 41
+24 38683 42
+44 39982 43
+32 39061 44
+50 42758 45
+55 42400 46
+43 43991 47
+57 42764 48
+28 46464 49
+48 48110 50
+25 47781 51
+63 49424 52
+47 49950 53
+8 52707 56
+7 54951 58
+27 54636 55
+49 54242 51
+-------------------------------------------------------
+NEW
+ERROR:root:MiniFieldStorage('peerId', '41')
+ERROR:root:MiniFieldStorage('JoinTime', '14002')
+ERROR:root:MiniFieldStorage('MsgCount', '5')
+ERROR:root:MiniFieldStorage('peerId', '26')
+ERROR:root:MiniFieldStorage('JoinTime', '19712')
+ERROR:root:MiniFieldStorage('MsgCount', '9')
+ERROR:root:MiniFieldStorage('peerId', '52')
+ERROR:root:MiniFieldStorage('JoinTime', '20532')
+ERROR:root:MiniFieldStorage('MsgCount', '10')
+ERROR:root:MiniFieldStorage('peerId', '35')
+ERROR:root:MiniFieldStorage('JoinTime', '14027')
+ERROR:root:MiniFieldStorage('MsgCount', '7')
+ERROR:root:MiniFieldStorage('peerId', '16')
+ERROR:root:MiniFieldStorage('JoinTime', '13538')
+ERROR:root:MiniFieldStorage('MsgCount', '7')
+ERROR:root:MiniFieldStorage('peerId', '60')
+ERROR:root:MiniFieldStorage('JoinTime', '19295')
+ERROR:root:MiniFieldStorage('MsgCount', '9')
+ERROR:root:MiniFieldStorage('peerId', '32')
+ERROR:root:MiniFieldStorage('JoinTime', '21066')
+ERROR:root:MiniFieldStorage('MsgCount', '10')
+ERROR:root:MiniFieldStorage('peerId', '31')
+ERROR:root:MiniFieldStorage('JoinTime', '16664')
+ERROR:root:MiniFieldStorage('MsgCount', '11')
+ERROR:root:MiniFieldStorage('peerId', '13')
+ERROR:root:MiniFieldStorage('JoinTime', '22356')
+ERROR:root:MiniFieldStorage('MsgCount', '12')
+ERROR:root:MiniFieldStorage('peerId', '2')
+ERROR:root:MiniFieldStorage('JoinTime', '23133')
+ERROR:root:MiniFieldStorage('MsgCount', '13')
+ERROR:root:MiniFieldStorage('peerId', '20')
+ERROR:root:MiniFieldStorage('JoinTime', '23897')
+ERROR:root:MiniFieldStorage('MsgCount', '14')
+ERROR:root:MiniFieldStorage('peerId', '34')
+ERROR:root:MiniFieldStorage('JoinTime', '21733')
+ERROR:root:MiniFieldStorage('MsgCount', '15')
+ERROR:root:MiniFieldStorage('peerId', '23')
+ERROR:root:MiniFieldStorage('JoinTime', '25414')
+ERROR:root:MiniFieldStorage('MsgCount', '16')
+ERROR:root:MiniFieldStorage('peerId', '14')
+ERROR:root:MiniFieldStorage('JoinTime', '29158')
+ERROR:root:MiniFieldStorage('MsgCount', '17')
+ERROR:root:MiniFieldStorage('peerId', '42')
+ERROR:root:MiniFieldStorage('JoinTime', '28929')
+ERROR:root:MiniFieldStorage('MsgCount', '18')
+ERROR:root:MiniFieldStorage('peerId', '22')
+ERROR:root:MiniFieldStorage('JoinTime', '28681')
+ERROR:root:MiniFieldStorage('MsgCount', '19')
+ERROR:root:MiniFieldStorage('peerId', '46')
+ERROR:root:MiniFieldStorage('JoinTime', '29364')
+ERROR:root:MiniFieldStorage('MsgCount', '20')
+ERROR:root:MiniFieldStorage('peerId', '39')
+ERROR:root:MiniFieldStorage('JoinTime', '29013')
+ERROR:root:MiniFieldStorage('MsgCount', '21')
+ERROR:root:MiniFieldStorage('peerId', '36')
+ERROR:root:MiniFieldStorage('JoinTime', '30758')
+ERROR:root:MiniFieldStorage('MsgCount', '22')
+ERROR:root:MiniFieldStorage('peerId', '62')
+ERROR:root:MiniFieldStorage('JoinTime', '31341')
+ERROR:root:MiniFieldStorage('MsgCount', '23')
+ERROR:root:MiniFieldStorage('peerId', '17')
+ERROR:root:MiniFieldStorage('JoinTime', '33218')
+ERROR:root:MiniFieldStorage('MsgCount', '24')
+ERROR:root:MiniFieldStorage('peerId', '61')
+ERROR:root:MiniFieldStorage('JoinTime', '34995')
+ERROR:root:MiniFieldStorage('MsgCount', '25')
+ERROR:root:MiniFieldStorage('peerId', '54')
+ERROR:root:MiniFieldStorage('JoinTime', '31837')
+ERROR:root:MiniFieldStorage('MsgCount', '26')
+ERROR:root:MiniFieldStorage('peerId', '15')
+ERROR:root:MiniFieldStorage('JoinTime', '35460')
+ERROR:root:MiniFieldStorage('MsgCount', '27')
+ERROR:root:MiniFieldStorage('peerId', '4')
+ERROR:root:MiniFieldStorage('JoinTime', '37243')
+ERROR:root:MiniFieldStorage('MsgCount', '28')
+ERROR:root:MiniFieldStorage('peerId', '38')
+ERROR:root:MiniFieldStorage('JoinTime', '37971')
+ERROR:root:MiniFieldStorage('MsgCount', '29')
+ERROR:root:MiniFieldStorage('peerId', '58')
+ERROR:root:MiniFieldStorage('JoinTime', '39735')
+ERROR:root:MiniFieldStorage('MsgCount', '30')
+ERROR:root:MiniFieldStorage('peerId', '53')
+ERROR:root:MiniFieldStorage('JoinTime', '36392')
+ERROR:root:MiniFieldStorage('MsgCount', '31')
+ERROR:root:MiniFieldStorage('peerId', '21')
+ERROR:root:MiniFieldStorage('JoinTime', '40067')
+ERROR:root:MiniFieldStorage('MsgCount', '32')
+ERROR:root:MiniFieldStorage('peerId', '45')
+ERROR:root:MiniFieldStorage('JoinTime', '36798')
+ERROR:root:MiniFieldStorage('MsgCount', '33')
+ERROR:root:MiniFieldStorage('peerId', '1')
+ERROR:root:MiniFieldStorage('JoinTime', '41558')
+ERROR:root:MiniFieldStorage('MsgCount', '34')
+ERROR:root:MiniFieldStorage('peerId', '29')
+ERROR:root:MiniFieldStorage('JoinTime', '42324')
+ERROR:root:MiniFieldStorage('MsgCount', '35')
+ERROR:root:MiniFieldStorage('peerId', '24')
+ERROR:root:MiniFieldStorage('JoinTime', '45094')
+ERROR:root:MiniFieldStorage('MsgCount', '36')
+ERROR:root:MiniFieldStorage('peerId', '44')
+ERROR:root:MiniFieldStorage('JoinTime', '44831')
+ERROR:root:MiniFieldStorage('MsgCount', '37')
+ERROR:root:MiniFieldStorage('peerId', '30')
+ERROR:root:MiniFieldStorage('JoinTime', '45575')
+ERROR:root:MiniFieldStorage('MsgCount', '38')
+ERROR:root:MiniFieldStorage('peerId', '50')
+ERROR:root:MiniFieldStorage('JoinTime', '43434')
+ERROR:root:MiniFieldStorage('MsgCount', '39')
+ERROR:root:MiniFieldStorage('peerId', '55')
+ERROR:root:MiniFieldStorage('JoinTime', '44062')
+ERROR:root:MiniFieldStorage('MsgCount', '40')
+ERROR:root:MiniFieldStorage('peerId', '43')
+ERROR:root:MiniFieldStorage('JoinTime', '46653')
+ERROR:root:MiniFieldStorage('MsgCount', '41')
+ERROR:root:MiniFieldStorage('peerId', '57')
+ERROR:root:MiniFieldStorage('JoinTime', '42639')
+ERROR:root:MiniFieldStorage('MsgCount', '42')
+ERROR:root:MiniFieldStorage('peerId', '28')
+ERROR:root:MiniFieldStorage('JoinTime', '50115')
+ERROR:root:MiniFieldStorage('MsgCount', '43')
+ERROR:root:MiniFieldStorage('peerId', '48')
+ERROR:root:MiniFieldStorage('JoinTime', '48949')
+ERROR:root:MiniFieldStorage('MsgCount', '44')
+ERROR:root:MiniFieldStorage('peerId', '25')
+ERROR:root:MiniFieldStorage('JoinTime', '51582')
+ERROR:root:MiniFieldStorage('MsgCount', '45')
+ERROR:root:MiniFieldStorage('peerId', '63')
+ERROR:root:MiniFieldStorage('JoinTime', '53349')
+ERROR:root:MiniFieldStorage('MsgCount', '46')
+ERROR:root:MiniFieldStorage('peerId', '47')
+ERROR:root:MiniFieldStorage('JoinTime', '51202')
+ERROR:root:MiniFieldStorage('MsgCount', '47')
+ERROR:root:MiniFieldStorage('peerId', '8')
+ERROR:root:MiniFieldStorage('JoinTime', '54862')
+ERROR:root:MiniFieldStorage('MsgCount', '48')
+ERROR:root:MiniFieldStorage('peerId', '7')
+ERROR:root:MiniFieldStorage('JoinTime', '55600')
+ERROR:root:MiniFieldStorage('MsgCount', '49')
+ERROR:root:MiniFieldStorage('peerId', '27')
+ERROR:root:MiniFieldStorage('JoinTime', '56302')
+ERROR:root:MiniFieldStorage('MsgCount', '50')

@@ -852,6 +852,10 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
         self.SIGQUERYDELAY = 500;
         self.PCKDELAY = 50;
 
+        self.SIGDELAY = 0;
+        self.SIGQUERYDELAY = 0;
+        self.PCKDELAY = 0;
+
         self.sigGenTime = self.SIGDELAY;
         self.sigQueryTime = self.SIGQUERYDELAY;
         self.pcktFwdTime = self.PCKDELAY;

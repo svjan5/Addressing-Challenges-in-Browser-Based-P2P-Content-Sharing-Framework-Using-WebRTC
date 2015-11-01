@@ -3,8 +3,8 @@ import time
 
 osDetails = os.uname()
 username = osDetails[1]
-
-filepath = "\"file:///home/" + username + "/Dropbox/SDN/DTRM/index.html\""
+username = "sdnp2p"
+filepath = "\"file:///home/" + username + "/Dropbox/SDN/DTRM/indextest.html\""
 command = "google-chrome " + filepath
 
 for i in range(50):
@@ -12,4 +12,4 @@ for i in range(50):
 		os.system("google-chrome --new-window");
 		time.sleep(2)
 	os.system(command)
-	time.sleep(400)
+	time.sleep(200)

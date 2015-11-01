@@ -62,6 +62,9 @@ function started() {
         console.log('Signaling server has started on:', server.info.uri);
 }
 
+console.log("\nStun server address:"  + process.argv[2]);
+console.log("Strategy in Use:"  + process.argv[4]);
+console.log("Doing Fixfigers: "  + (process.argv[5] == "fix"));
 
 function mainServerFunction(socket) {
 
@@ -83,10 +86,11 @@ function mainServerFunction(socket) {
                 var destPeerId = null;
 
                 if (Object.keys(peers).length > 0) {
-                        var keys = Object.keys(peers);
-                        keys.push(peerId);
-                        keys = keys.sort();
-                        destPeerId = keys[(keys.indexOf(peerId) + 1)%keys.length];
+                        destPeerId = randomPeers[counter-2];
+                        // var keys = Object.keys(peers);
+                        // keys.push(peerId);
+                        // keys = keys.sort(function(a,b) {return a - b; });
+                        // destPeerId = keys[(keys.indexOf(peerId) + 1)%keys.length];
                         // destPeerId = parseInt(keys[Math.floor(Math.random() * keys.length)]);
                 }
 
@@ -95,7 +99,11 @@ function mainServerFunction(socket) {
                 socket.emit('p-registered', {
                         peerId: peerId,
                         n_fingers: config.get('dtrm.n_fingers'),
-                        destPeerId: destPeerId
+                        stun_servers: [ 'stun:' + process.argv[2], 'stun:' + process.argv[3]],
+                        post_url: process.argv[2]+":8000",
+                        destPeerId: destPeerId,
+                        strategy: process.argv[4],
+                        doFix: process.argv[5]
                 });
 
                 console.log('registered new peer: ', peerId);

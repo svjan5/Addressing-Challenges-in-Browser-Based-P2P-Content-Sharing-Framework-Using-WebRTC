@@ -100,6 +100,7 @@ function ChannelManager(peerId, bootConn, nodeDetails) {
         var self = this;
         var isStabilize = true;
         var stabilizeData;
+        var sendToServer = -1;
 
         // Establish a connection to another peer
         self.connect = function(destPeerId) {
@@ -283,18 +284,25 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 var msgId = new Id().toDec();
                                 nodeDetails.notifyPredecessor(
                                         nodeDetails.successor,
-                                        msgId
+                                        msgId,
+                                        "self.joinNetwork(3," + msgId + ")"
                                 );
+                                break;
 
+                        case 3:
+                                cmlog("JoinNetwork case 2 successful");
                                 var msgId = new Id().toDec();
                                 var callStabilizeOn = (nodeDetails.succPreceding == null) ? nodeDetails.successor : nodeDetails.succPreceding;
                                 nodeDetails.notifySuccessor(
                                         callStabilizeOn,
-                                        msgId
+                                        msgId,
+                                        "self.joinNetwork(4," + msgId + ")"
                                 );
 
                                 nodeDetails.predecessor = callStabilizeOn;
+                                break;
 
+                        case 4:
                                 cmlog("JOIN NETWORK COMPLETED: \n Successor: " + nodeDetails.successor + "\tPredecessor: " + nodeDetails.predecessor);
                                 nodeDetails.connected = true;
                                 console.profileEnd();
@@ -304,6 +312,10 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 self.getMsgCount();
                                 break;
                 }
+        }
+
+        self.postData = function(data){
+                $.post(nodeDetails.postURL , data, function(data, status) {console.log(data);});
         }
 
         self.listPeers = function() {
@@ -348,11 +360,23 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         srcPeerId: nodeDetails.peerId,
                         type: "fixfingers"
                 });
+        }
 
-                cmlog(channel);
-                cmlog({
+        self.setDelay = function(){
+                var channel = nodeDetails.connectorTable[nodeDetails.successor];
+
+                channel.send({
                         srcPeerId: nodeDetails.peerId,
-                        type: "fixfingers"
+                        type: "setDelay"
+                });
+        }
+
+        self.resetDelay = function(){
+                var channel = nodeDetails.connectorTable[nodeDetails.successor];
+
+                channel.send({
+                        srcPeerId: nodeDetails.peerId,
+                        type: "resetDelay"
                 });
         }
 
@@ -395,6 +419,11 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog(message);
                                 break;
 
+                        case "request-forward":
+                                cmlog(message);
+                                nodeDetails.forwardTable[message.msgId] = message.srcPeerId;
+                                message.srcPeerId = nodeDetails.peerId;
+                                message.type = "request";
                         case "request":
                                 cmlog("Request Received");
                                 cmlog(message);
@@ -405,7 +434,12 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "response":
                                 cmlog("In response");
                                 cmlog(message);
-
+                                if(typeof nodeDetails.forwardTable[message.msgId] !== 'undefined') {
+                                        message.destPeerId = nodeDetails.forwardTable[message.msgId];
+                                        nodeDetails.forwardPacket(message);
+                                        delete nodeDetails.forwardTable[message.msgId];
+                                        break;
+                                }
                                 if (message.destPeerId == nodeDetails.peerId) {
                                         cmlog("Message for self");
                                         var conId = parseInt(message.data);
@@ -444,6 +478,12 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "strategy2res":
                                 cmlog("In Strategy 2 response");
                                 cmlog(message);
+                                if(typeof nodeDetails.forwardTable[message.msgId] !== 'undefined') {
+                                        message.destPeerId = nodeDetails.forwardTable[message.msgId];
+                                        nodeDetails.forwardPacket(message);
+                                        delete nodeDetails.forwardTable[message.msgId];
+                                        break;
+                                }
 
                                 if (message.destPeerId == nodeDetails.peerId) {
                                         cmlog("Message for self");
@@ -485,6 +525,12 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog("In peer-connect-offer:")
                                 cmlog(message);
 
+                                if(message.flag == true){
+                                        nodeDetails.forwardTable[message.msgId] = message.srcPeerId;
+                                        message.srcPeerId = nodeDetails.peerId;
+                                        message.flag = false;
+                                }
+
                                 if(message.destPeerId != nodeDetails.peerId){
                                         cmlog("Packet forwarded");
                                         nodeDetails.forwardPacket(message);
@@ -510,13 +556,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.signal = signal;
                                         message.type = "peer-connect-reply";
 
-                                        nodeDetails.forwardPacket(message);
+                                        setTimeout(function() {
+                                                nodeDetails.forwardPacket(message);
+                                                cmlog("peer-connect-offer: Signal queried");
+                                        }, nodeDetails.sigQueryTime);
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
                                         cmlog("peer-connect :ready")
                                         cmlog("Connected to " + message.destPeerId);
-                                        var conId = message.destPeerId;
+                                        var conId = message.conId;
 
                                         nodeDetails.channelTable[decSig.id].on('message', self.messageHandler);
                                         nodeDetails.connectorTable[conId] = nodeDetails.channelTable[decSig.id];
@@ -528,6 +577,14 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                         case "peer-connect-reply":
                                 cmlog("In peer-connect-reply:")
                                 cmlog(message);
+
+                                if(typeof nodeDetails.forwardTable[message.msgId] !== 'undefined') {
+                                        message.destPeerId = nodeDetails.forwardTable[message.msgId];
+                                        nodeDetails.forwardPacket(message);
+                                        delete nodeDetails.forwardTable[message.msgId];
+                                        break;
+                                }
+
                                 var conId = message.srcPeerId;
 
                                 if(message.destPeerId != nodeDetails.peerId){
@@ -571,12 +628,15 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.signal = signal;
                                         message.signal.id = decSig.id;
                                         message.signal = self.encodeSignal(message.signal);
-                                        message.destPeerId = message.conId;
+                                        message.destPeerId = message.fwdId;
                                         message.srcPeerId = nodeDetails.srcPeerId;
                                         message.data = nodeDetails.peerId;
 
                                         message.type = "response";
-                                        self.messageHandler(message);
+                                        setTimeout(function() {
+                                                self.messageHandler(message);
+                                                cmlog("signal-accept: Signal queried");
+                                        }, nodeDetails.sigQueryTime);
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
@@ -590,6 +650,16 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 nodeDetails.channelTable[decSig.id].signal(decSig);
                                 break;
 
+
+                        case "notify":
+                                cmlog("In notify"); cmlog(message);
+                                eval(message.data);
+                                message.destPeerId = message.srcPeerId;
+                                message.srcPeerId = nodeDetails.peerId;
+                                message.type = "request";
+                                message.data = message.func;
+                                nodeDetails.forwardPacket(message);
+                                break;e
 
                         case "listPeers":
                                 cmlog(message);
@@ -612,6 +682,29 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 /*Get list*/
                                 if (message.srcPeerId == nodeDetails.peerId) {
                                         cmlog("--------------------------------################## Messages exchanged: " + message.data);
+                                        switch(sendToServer){
+                                                case -1:
+                                                        self.postData({
+                                                                peerId: nodeDetails.peerId,
+                                                                JoinTime: nodeDetails.joinEndTime,
+                                                                MsgCount: message.data
+                                                        });
+                                                        sendToServer++;
+                                                        if(nodeDetails.doFix){
+                                                                self.resetDelay();
+                                                                setTimeout(function() {self.fixAllFingers();}, nodeDetails.fixDelay);
+                                                        }
+                                                        break;
+                                                case 0:
+                                                        if(nodeDetails.doFix){
+                                                                self.postData({
+                                                                        peerId: nodeDetails.peerId,
+                                                                        fixMsgCount: message.data
+                                                                });
+                                                        }
+                                                        sendToServer++;
+                                                        break;
+                                        }
                                         nodeDetails.msgCount = 0;
                                 }
                                 /*forward*/
@@ -628,12 +721,53 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                 cmlog(message);
                                 /*Get list*/
                                 if (message.srcPeerId == nodeDetails.peerId) {
+                                        nodeDetails.fixCallReturned = true;
                                         nodeDetails.fixFingers(0, null);
                                         cmlog("Fixed all fingers");
                                 }
                                 /*forward*/
-                                else {
+                                else 
                                         nodeDetails.fixFingers(0, message.srcPeerId);
+                                break;
+
+                        case "setDelay":
+                                cmlog(message);
+                                if(message.srcPeerId == nodeDetails.peerId){            
+                                        nodeDetails.sigGenTime = nodeDetails.SIGDELAY;
+                                        nodeDetails.sigQueryTime = nodeDetails.SIGQUERYDELAY;
+                                        nodeDetails.pcktFwdTime = nodeDetails.PCKDELAY;
+                                        cmlog("Fwd delay changed to -> " + nodeDetails.pcktFwdTime);
+                                }
+                                else{
+                                        nodeDetails.sigGenTime = nodeDetails.SIGDELAY;
+                                        nodeDetails.sigQueryTime = nodeDetails.SIGQUERYDELAY;
+                                        nodeDetails.pcktFwdTime = nodeDetails.PCKDELAY;
+                                        var channel = nodeDetails.connectorTable[nodeDetails.successor];
+                                        channel.send({
+                                                srcPeerId: message.srcPeerId,
+                                                type: "setDelay"
+                                        });
+                                }
+                                break;
+                        
+
+                        case "resetDelay":
+                                cmlog(message);
+                                if(message.srcPeerId == nodeDetails.peerId){
+                                        nodeDetails.pcktFwdTime = 0;
+                                        nodeDetails.sigGenTime = 0;
+                                        nodeDetails.sigQueryTime = 0;
+                                        cmlog("Fwd delay changed to -> " + nodeDetails.pcktFwdTime);
+                                }
+                                else{
+                                        nodeDetails.pcktFwdTime = 0;
+                                        nodeDetails.sigGenTime = 0;
+                                        nodeDetails.sigQueryTime = 0;
+                                        var channel = nodeDetails.connectorTable[nodeDetails.successor];
+                                        channel.send({
+                                                srcPeerId: message.srcPeerId,
+                                                type: "resetDelay"
+                                        });
                                 }
                                 break;
 
@@ -645,6 +779,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 if (fromKey > toKey) return (peerId > fromKey || peerId < toKey);
                 else return (peerId > fromKey && peerId < toKey);
         }
+
         self.encodeSignal = function(signal) {
                 pack = {
                         id: signal.id,
@@ -652,6 +787,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                 };
                 return Base64.encode(JSON.stringify(pack));
         }
+
         self.decodeSignal = function(signal) {
                 pack = JSON.parse(Base64.decode(signal).replace("\n", "\\r\\n"))
                 pack.sig.id = pack.id;
