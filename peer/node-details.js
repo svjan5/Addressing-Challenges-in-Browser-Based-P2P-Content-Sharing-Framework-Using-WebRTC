@@ -210,10 +210,13 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                         self.channelTable[signalId].on('signal', function(signal) {
                                 signal.id = signalId;
                                 signal = peer.channelManager.encodeSignal(signal);
-                                setTimeout(function() {
-                                        self.findSuccessor(self.peerId, callonId, id, self.peerId, msgId, func, signal);
-                                        ndlog("initFindSuccessor: Signal generated");
-                                }, self.sigGenTime);
+                                if(self.sigGenTime == 0) self.findSuccessor(self.peerId, callonId, id, self.peerId, msgId, func, signal);
+                                else {
+                                        setTimeout(function() {
+                                                self.findSuccessor(self.peerId, callonId, id, self.peerId, msgId, func, signal);
+                                                ndlog("initFindSuccessor: Signal generated");
+                                        }, self.sigGenTime);
+                                }
                         });
                 }
                 else {
@@ -250,7 +253,8 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                 var channel = self.connectorTable[destPeerId];
                 ndlog("forwardPacket: forwarding to :"+ destPeerId);
                 self.msgCount++;
-                setTimeout(function(){channel.send(packet); }, self.pcktFwdTime);
+                if(self.pcktFwdTime == 0) channel.send(packet);
+                else setTimeout(function(){channel.send(packet); }, self.pcktFwdTime);
         }
         
         self.connectViaPeer = function(peerId, callback){
@@ -266,20 +270,24 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                 self.channelTable[signalId].on('signal', function(signal) {
                         signal.id = signalId;
                         signal = peer.channelManager.encodeSignal(signal);
+                        message = {
+                                type: "peer-connect-offer",
+                                conId: self.peerId,
+                                fwdId: self.peerId,
+                                srcPeerId: self.peerId,
+                                destPeerId: peerId,
+                                signal: signal,
+                                func: callback,
+                                flag: true
+                        };
 
-                        setTimeout(function() {
-                                self.forwardPacket({
-                                        type: "peer-connect-offer",
-                                        conId: self.peerId,
-                                        fwdId: self.peerId,
-                                        srcPeerId: self.peerId,
-                                        destPeerId: peerId,
-                                        signal: signal,
-                                        func: callback,
-                                        flag: true
-                                });
-                                ndlog("connectViaPeer: Signal generated");
-                        }, self.sigGenTime);
+                        if(self.sigGenTime == 0) self.forwardPacket(message);
+                        else{
+                                setTimeout(function() {
+                                        self.forwardPacket(message);
+                                        ndlog("connectViaPeer: Signal generated");
+                                }, self.sigGenTime);
+                        }
                 });
         }
 
@@ -297,10 +305,14 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                         self.channelTable[signalId].on('signal', function(signal) {
                                 signal.id = signalId;
                                 signal = peer.channelManager.encodeSignal(signal);
-                                setTimeout(function() {
-                                        self.findPredOfSucc(self.peerId, destPeerId, msgId, func, signal);
-                                        ndlog("initFindPredOfSucc: Signal generated");
-                                }, self.sigGenTime);
+
+                                if(self.sigGenTime == 0) self.findPredOfSucc(self.peerId, destPeerId, msgId, func, signal);
+                                else{
+                                        setTimeout(function() {
+                                                self.findPredOfSucc(self.peerId, destPeerId, msgId, func, signal);
+                                                ndlog("initFindPredOfSucc: Signal generated");
+                                        }, self.sigGenTime);
+                                }
                         });
                 }
                 else{

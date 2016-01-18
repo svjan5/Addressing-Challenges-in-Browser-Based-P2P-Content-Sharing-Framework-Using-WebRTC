@@ -8,9 +8,9 @@ plot <- ggplot(df, aes(x=n)) +
         geom_line(aes(y = msg, linetype=Strategy)) +
         theme_bw() +
         theme(legend.position=c(.15, .8)) + 
-        scale_linetype_manual("Fixfinger Strategy" ,labels = c("Strategy 1", "Strategy 2"), values = c("dashed", "solid")) +
-        ggtitle("Comparing strategies for periodic fix fingers operation") +
+        scale_linetype_manual("Fixfinger Strategy" ,labels = c("Strategy 1", "Strategy 2"), values = c("F1", "twodash")) +
+        #ggtitle("Comparing strategies for periodic fix fingers operation") +
         labs(y = "Number of messages exchanged", x = "Number of peers in network") +
-        ggsave(file="B_plot.png",  width = 15.875, height=11.985625, units = "cm", dpi=300)
+        ggsave(file="Comparing strategies for periodic fix fingers operation.png",  width = 15.875, height=11.985625, units = "cm", dpi=300)
 
 print(plot)

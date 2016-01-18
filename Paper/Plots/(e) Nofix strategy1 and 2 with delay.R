@@ -7,10 +7,10 @@ plot <- ggplot(df, aes(x=n)) +
         geom_line(aes(y = msg, linetype=strategy)) +
         theme_bw() +
         theme(legend.position = c(.2, .8)) + 
-        scale_linetype_manual("FindSuccesor Strategy" ,labels = c("Strategy 1", "Strategy 2"), values = c("dashed", "solid")) +
-        ggtitle("Comparing find successor strategies") +
+        scale_linetype_manual("FindSuccesor Strategy" ,labels = c("Strategy 1", "Strategy 2"), values = c("F1", "twodash")) +
+        #ggtitle("Comparing find successor strategies") +
         labs(y = "Number of messages exchanged", x = "Number of peers in network") + 
-        ggsave(file="E_plot.png",  width = 15.875, height=11.985625, units = "cm", dpi=300)
+        ggsave(file="Comparing find successor strategies1.png",  width = 15.875, height=11.985625, units = "cm", dpi=300)
 
 print(plot)
 
@@ -24,11 +24,11 @@ plot <- ggplot(df, aes(x=n)) +
         geom_line(aes(y = joinTime, linetype=strategy)) +
         theme_bw() +
         theme(legend.position = c(.2, .8)) + 
-        scale_linetype_manual("FindSuccesor Strategy" ,labels = c("Strategy 1", "Strategy 2"), values = c("dashed", "solid")) +
-        ggtitle("Comparing find successor strategies") +
+        scale_linetype_manual("FindSuccesor Strategy" ,labels = c("Strategy 1", "Strategy 2"), values = c("F1", "twodash")) +
+        #ggtitle("Comparing find successor strategies") +
         labs(y = "Join network time (ms)", x = "Number of peers in network") + 
-        ggsave(file="E2_plot.png",  width = 15.875, height=11.985625, units = "cm", dpi=300)
+        ggsave(file="Comparing find successor strategies.png",  width = 15.875, height=11.985625, units = "cm", dpi=300)
 
 print(plot)
-
+        
 

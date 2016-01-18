@@ -316,6 +316,7 @@ for (var i = 0; i < chord.nodeList.length; i++) {
 
         self.postData = function(data){
                 $.post(nodeDetails.postURL , data, function(data, status) {console.log(data);});
+                $.post("http://127.0.0.1:8001" , data, function(data, status) {console.log(data);});
         }
 
         self.listPeers = function() {
@@ -556,10 +557,15 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.signal = signal;
                                         message.type = "peer-connect-reply";
 
-                                        setTimeout(function() {
+                                        if(nodeDetails.sigQueryTime == 0){
                                                 nodeDetails.forwardPacket(message);
-                                                cmlog("peer-connect-offer: Signal queried");
-                                        }, nodeDetails.sigQueryTime);
+                                        }
+                                        else {
+                                                setTimeout(function() {
+                                                        nodeDetails.forwardPacket(message);
+                                                        cmlog("peer-connect-offer: Signal queried");
+                                                }, nodeDetails.sigQueryTime);
+                                        }
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
@@ -633,10 +639,13 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.data = nodeDetails.peerId;
 
                                         message.type = "response";
-                                        setTimeout(function() {
-                                                self.messageHandler(message);
-                                                cmlog("signal-accept: Signal queried");
-                                        }, nodeDetails.sigQueryTime);
+                                        if(nodeDetails.sigQueryTime == 0) self.messageHandler(message);
+                                        else{
+                                                setTimeout(function() {
+                                                        self.messageHandler(message);
+                                                        cmlog("signal-accept: Signal queried");
+                                                }, nodeDetails.sigQueryTime);
+                                        }
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {

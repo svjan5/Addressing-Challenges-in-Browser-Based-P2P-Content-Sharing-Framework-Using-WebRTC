@@ -1,0 +1,27 @@
+nodejs "bootstrap.js" "stun.l.google.com:19302" "stun1.l.google.com:19302" 1 nofix "127.0.0.1"
+
+tinyurl.com/sdnpeer
+
+ssh -i "kp-bootstrap.pem" ubuntu@ec2-54-169-197-220.ap-southeast-1.compute.amazonaws.com -XC
+ssh -i "kp-peer1.pem" ubuntu@ec2-52-48-19-6.eu-west-1.compute.amazonaws.com -XC
+ssh -i "peer3.pem" ubuntu@ec2-52-23-155-165.compute-1.amazonaws.com -XC -c blowfish-cbc,arcfour
+
+Install google-chrome:
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
+sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+sudo apt-get update 
+sudo apt-get install google-chrome-stable
+
+Install unzip:
+sudo apt-get install unzip
+unzip file.zip
+
+replace from dropbox:
+wget link -O filename
+
+wget https://www.dropbox.com/s/3aje06udjaz9fn0/statserver.py?dl=0 -O statserver.py
+wget https://www.dropbox.com/s/oin36epohj00tam/bundle.js?dl=0 -O bundle.js
+wget https://www.dropbox.com/s/nuq23mat3h7q7vj/index.html?dl=0 -O index.html
+wget https://www.dropbox.com/s/u0197ibugs8j73x/jquery.min.js?dl=0 -O jquery.min.js
+
+google-chrome ./index.html

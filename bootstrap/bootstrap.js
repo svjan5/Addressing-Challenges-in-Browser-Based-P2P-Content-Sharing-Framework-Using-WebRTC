@@ -62,9 +62,11 @@ function started() {
         console.log('Signaling server has started on:', server.info.uri);
 }
 
-console.log("\nStun server address:"  + process.argv[2]);
+console.log("\nStun server 1 address:"  + process.argv[2]);
+console.log("Stun server 2 address:"  + process.argv[3]);
 console.log("Strategy in Use:"  + process.argv[4]);
 console.log("Doing Fixfigers: "  + (process.argv[5] == "fix"));
+console.log("PostUrl: "  + process.argv[6]+":8000");
 
 function mainServerFunction(socket) {
 
@@ -78,21 +80,21 @@ function mainServerFunction(socket) {
         function registerPeer() {
                 // Handling duplicate peerId
                 var peerId = -1;
-                // do {
-                //         peerId = Math.floor(Math.random() * Math.pow(2, config.get('dtrm.n_fingers')));
-                // } while (peers[peerId] !== undefined);
-                peerId = randomPeers[(counter++)%randomPeers.length];
+                do {
+                        peerId = Math.floor(Math.random() * Math.pow(2, config.get('dtrm.n_fingers')));
+                } while (peers[peerId] !== undefined);
+                // peerId = randomPeers[(counter++)%randomPeers.length];
 
                 var destPeerId = null;
 
-                if (Object.keys(peers).length > 0) {
-                        destPeerId = randomPeers[counter-2];
-                        // var keys = Object.keys(peers);
+                // if (Object.keys(peers).length > 0) {
+                        // destPeerId = randomPeers[counter-2];
+                var keys = Object.keys(peers);
                         // keys.push(peerId);
                         // keys = keys.sort(function(a,b) {return a - b; });
                         // destPeerId = keys[(keys.indexOf(peerId) + 1)%keys.length];
-                        // destPeerId = parseInt(keys[Math.floor(Math.random() * keys.length)]);
-                }
+                destPeerId = parseInt(keys[Math.floor(Math.random() * keys.length)]);
+                // }
 
                 peers[peerId] = socket;
 
@@ -100,7 +102,7 @@ function mainServerFunction(socket) {
                         peerId: peerId,
                         n_fingers: config.get('dtrm.n_fingers'),
                         stun_servers: [ 'stun:' + process.argv[2], 'stun:' + process.argv[3]],
-                        post_url: process.argv[2]+":8000",
+                        post_url: process.argv[6],
                         destPeerId: destPeerId,
                         strategy: process.argv[4],
                         doFix: process.argv[5]

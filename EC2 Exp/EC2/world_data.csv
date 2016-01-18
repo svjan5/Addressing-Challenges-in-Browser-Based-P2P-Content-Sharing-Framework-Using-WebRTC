@@ -1,0 +1,61 @@
+n,Join_Time,Messages,Location,Strategy
+1,417,5,Oregon,red
+2,1824,10,Korea,red
+3,3618,13,Brazil,red
+4,3056,8,Ireland,red
+5,2053,8,Australia,red
+6,3531,25,N. Virginia,red
+7,4152,13,Tokyo,red
+8,6799,30,Singapore,red
+9,4741,13,Oregon,red
+10,4640,25,Korea,red
+11,5878,21,N. Virginia,red
+12,3959,30,Brazil,red
+13,5973,28,Tokyo,red
+14,1049,8,Ireland,red
+15,5883,26,Singapore,red
+16,3476,33,Australia,red
+17,5122,28,Singapore,red
+18,4149,31,Korea,red
+19,5634,33,N. Virginia,red
+20,4676,28,Brazil,red
+21,2231,8,Oregon,red
+22,6001,47,Australia,red
+23,3517,42,Singapore,red
+24,7198,64,Tokyo,red
+25,5440,51,Korea,red
+26,7164,41,Brazil,red
+27,7264,42,N. Virginia,red
+28,6418,51,Oregon,red
+29,6143,58,Ireland,red
+30,7214,50,Tokyo,red
+1,364,5,Singapore,blue
+2,3038,8,Oregon,blue
+3,4621,10,N. Virginia,blue
+4,4445,12,Ireland,blue
+5,3336,11,Oregon,blue
+6,3199,12,Ireland,blue
+7,2517,8,Singapore,blue
+8,4233,14,N. Virginia,blue
+9,5093,12,Singapore,blue
+10,2332,8,Ireland,blue
+11,3870,14,Oregon,blue
+12,4422,14,Singapore,blue
+13,3935,15,Ireland,blue
+14,4730,20,N. Virginia,blue
+15,2196,21,Oregon,blue
+16,5096,14,Brazil,blue
+17,4634,10,N. Virginia,blue
+18,5029,23,Oregon,blue
+19,3585,19,Singapore,blue
+20,4606,25,Ireland,blue
+21,3812,13,N. Virginia,blue
+22,3992,28,Brazil,blue
+23,4840,28,Oregon,blue
+24,5046,24,Australia,blue
+25,5218,35,N. Virginia,blue
+26,3215,25,Tokyo,blue
+27,5036,37,Singapore,blue
+28,5868,33,Ireland,blue
+29,1803,8,Tokyo,blue
+30,5808,42,Brazil,blue

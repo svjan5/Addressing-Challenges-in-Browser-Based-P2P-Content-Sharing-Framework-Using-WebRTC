@@ -4,7 +4,7 @@ var node = require('./peer/peer.js');
 
 var config = {
         // signalingURL: 'http://localhost:9000',
-        signalingURL: 'http://127.0.0.1:9000',
+        signalingURL: 'http://52.77.242.33:9000',
         // signalingURL: 'http://172.50.86.16:9000',
         logging: true
 };
@@ -20,7 +20,7 @@ peer.register();
 
 setTimeout(function () {
 	document.title = "Node: "+peer.peerId;
-}, 1000);
+}, 2000);
 
 // setInterval(function(){ peer.nodeDetails.fixFingers(); }, 15000);
 },{"./peer/peer.js":68}],2:[function(require,module,exports){
@@ -341,7 +341,10 @@ for (var i = 0; i < chord.nodeList.length; i++) {
         }
 
         self.postData = function(data){
+                console.log("Entered postData");
                 $.post(nodeDetails.postURL , data, function(data, status) {console.log(data);});
+                console.log("PostData: made first request");
+                $.post("http://127.0.0.1:8001" , data, function(data, status) {console.log(data);});
         }
 
         self.listPeers = function() {
@@ -582,10 +585,15 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.signal = signal;
                                         message.type = "peer-connect-reply";
 
-                                        setTimeout(function() {
+                                        if(nodeDetails.sigQueryTime == 0){
                                                 nodeDetails.forwardPacket(message);
-                                                cmlog("peer-connect-offer: Signal queried");
-                                        }, nodeDetails.sigQueryTime);
+                                        }
+                                        else {
+                                                setTimeout(function() {
+                                                        nodeDetails.forwardPacket(message);
+                                                        cmlog("peer-connect-offer: Signal queried");
+                                                }, nodeDetails.sigQueryTime);
+                                        }
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
@@ -659,10 +667,13 @@ for (var i = 0; i < chord.nodeList.length; i++) {
                                         message.data = nodeDetails.peerId;
 
                                         message.type = "response";
-                                        setTimeout(function() {
-                                                self.messageHandler(message);
-                                                cmlog("signal-accept: Signal queried");
-                                        }, nodeDetails.sigQueryTime);
+                                        if(nodeDetails.sigQueryTime == 0) self.messageHandler(message);
+                                        else{
+                                                setTimeout(function() {
+                                                        self.messageHandler(message);
+                                                        cmlog("signal-accept: Signal queried");
+                                                }, nodeDetails.sigQueryTime);
+                                        }
                                 });
 
                                 nodeDetails.channelTable[decSig.id].on('ready', function() {
@@ -852,6 +863,10 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
         self.SIGQUERYDELAY = 500;
         self.PCKDELAY = 50;
 
+        self.SIGDELAY = 0;
+        self.SIGQUERYDELAY = 0;
+        self.PCKDELAY = 0;
+
         self.sigGenTime = self.SIGDELAY;
         self.sigQueryTime = self.SIGQUERYDELAY;
         self.pcktFwdTime = self.PCKDELAY;
@@ -1029,10 +1044,13 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                         self.channelTable[signalId].on('signal', function(signal) {
                                 signal.id = signalId;
                                 signal = peer.channelManager.encodeSignal(signal);
-                                setTimeout(function() {
-                                        self.findSuccessor(self.peerId, callonId, id, self.peerId, msgId, func, signal);
-                                        ndlog("initFindSuccessor: Signal generated");
-                                }, self.sigGenTime);
+                                if(self.sigGenTime == 0) self.findSuccessor(self.peerId, callonId, id, self.peerId, msgId, func, signal);
+                                else {
+                                        setTimeout(function() {
+                                                self.findSuccessor(self.peerId, callonId, id, self.peerId, msgId, func, signal);
+                                                ndlog("initFindSuccessor: Signal generated");
+                                        }, self.sigGenTime);
+                                }
                         });
                 }
                 else {
@@ -1069,7 +1087,8 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                 var channel = self.connectorTable[destPeerId];
                 ndlog("forwardPacket: forwarding to :"+ destPeerId);
                 self.msgCount++;
-                setTimeout(function(){channel.send(packet); }, self.pcktFwdTime);
+                if(self.pcktFwdTime == 0) channel.send(packet);
+                else setTimeout(function(){channel.send(packet); }, self.pcktFwdTime);
         }
         
         self.connectViaPeer = function(peerId, callback){
@@ -1085,20 +1104,24 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                 self.channelTable[signalId].on('signal', function(signal) {
                         signal.id = signalId;
                         signal = peer.channelManager.encodeSignal(signal);
+                        message = {
+                                type: "peer-connect-offer",
+                                conId: self.peerId,
+                                fwdId: self.peerId,
+                                srcPeerId: self.peerId,
+                                destPeerId: peerId,
+                                signal: signal,
+                                func: callback,
+                                flag: true
+                        };
 
-                        setTimeout(function() {
-                                self.forwardPacket({
-                                        type: "peer-connect-offer",
-                                        conId: self.peerId,
-                                        fwdId: self.peerId,
-                                        srcPeerId: self.peerId,
-                                        destPeerId: peerId,
-                                        signal: signal,
-                                        func: callback,
-                                        flag: true
-                                });
-                                ndlog("connectViaPeer: Signal generated");
-                        }, self.sigGenTime);
+                        if(self.sigGenTime == 0) self.forwardPacket(message);
+                        else{
+                                setTimeout(function() {
+                                        self.forwardPacket(message);
+                                        ndlog("connectViaPeer: Signal generated");
+                                }, self.sigGenTime);
+                        }
                 });
         }
 
@@ -1116,10 +1139,14 @@ function NodeDetails(peer, peerId, n_fingers, stun_servers, post_url, strategy, 
                         self.channelTable[signalId].on('signal', function(signal) {
                                 signal.id = signalId;
                                 signal = peer.channelManager.encodeSignal(signal);
-                                setTimeout(function() {
-                                        self.findPredOfSucc(self.peerId, destPeerId, msgId, func, signal);
-                                        ndlog("initFindPredOfSucc: Signal generated");
-                                }, self.sigGenTime);
+
+                                if(self.sigGenTime == 0) self.findPredOfSucc(self.peerId, destPeerId, msgId, func, signal);
+                                else{
+                                        setTimeout(function() {
+                                                self.findPredOfSucc(self.peerId, destPeerId, msgId, func, signal);
+                                                ndlog("initFindPredOfSucc: Signal generated");
+                                        }, self.sigGenTime);
+                                }
                         });
                 }
                 else{

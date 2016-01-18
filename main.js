@@ -19,6 +19,6 @@ peer.register();
 
 setTimeout(function () {
 	document.title = "Node: "+peer.peerId;
-}, 1000);
+}, 2000);
 
 // setInterval(function(){ peer.nodeDetails.fixFingers(); }, 15000);
