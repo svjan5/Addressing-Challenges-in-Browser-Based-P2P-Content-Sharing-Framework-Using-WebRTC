@@ -5,7 +5,7 @@
 ### **Dependencies:**  
 
 - **npm modules:** 
-  - **For peer**: bows, dht-id, eventemitter2, simple-pee,  socket.io-client, 
+  - **For peer**: bows, dht-id, eventemitter2, simple-peer,  socket.io-client, 
   - **For Boot strap server:** dht-id, hapi, socket.io, config, socket.io-client
   - **Other requirements:** browserify
 
