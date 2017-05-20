@@ -1,6 +1,6 @@
 # Addressing Challenges in Browser Based P2P Content Sharing Framework Using WebRTC
 
-**Implementation of [Paper](http://ieeexplore.ieee.org/document/7474178/) | [Slides](https://github.com/svjan5/Web-Browser-Based-P2P-Content-Sharing-Framework/blob/master/Docs/Presentation.pdf)**
+**Implementation of [Paper](http://ieeexplore.ieee.org/document/7474178/) | [Slides](https://github.com/svjan5/Browser-Based-P2P-Content-Sharing-Framework/blob/master/Docs/Presentation.pdf)**
 
 ### **Dependencies:**  
 
