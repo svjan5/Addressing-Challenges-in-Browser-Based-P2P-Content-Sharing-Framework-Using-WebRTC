@@ -2,16 +2,14 @@
 
 **Implementation of [Paper](http://ieeexplore.ieee.org/document/7474178/) | [Slides](https://github.com/svjan5/DTRM/blob/master/Docs/Presentation.pdf)**
 
-#### **Dependencies:**  
+### **Dependencies:**  
 
 - **npm modules:** 
   - **For peer**: bows, dht-id, eventemitter2, simple-pee,  socket.io-client, 
   - **For Boot strap server:** dht-id, hapi, socket.io, config, socket.io-client
   - **Other requirements:** browserify
 
-​	
-
-#### Building and executing code:
+### Building and executing code:
 
 * **Peer**  (`./peer` )
   * `peer.js` contains the main code for a peer in the asynchronous chord network.
